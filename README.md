@@ -22,4 +22,4 @@ Note down the MerchantID, SecurityCode and Currency, information is located in t
 
 5. Find **Cointopay International** and click **Configure** button to next to it, then click **Proceed with the installation**.
 
-6. Enter your [API credentials](https://cointopay.com) (*Merchant ID* , *Security Code*, *Select crypto currency* ). Crypto currencies will be listed according to the selected coins (Account>Wallet Preference) at <https://cointpay.com>. and click **Save**.
+6. Enter your [API credentials](https://cointopay.com) (*Merchant ID* , *Security Code*, *Select crypto currency* ). Crypto currencies will be listed according to the selected coins (Account>Wallet Preference) at <https://cointopay.com>. and click **Save**.
