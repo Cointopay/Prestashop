@@ -8,7 +8,7 @@ Cointopay.com crypto payment plugin for: **PrestaShop**
 
 Sign up for Cointopay account at <https://cointpay.com> .
 
-Before we start the installation, please create an account on Cointopay.com. Note down the MerchantID, the SecurityCode and Currency, information is located in the Account section. These pieces of information are mandatory to be able to connect the payment module to your PrestaShop
+Before we start the installation, please create an account on Cointopay.com. Note down the MerchantID, the SecurityCode and Currency, information is located in the Account section. These pieces of information are mandatory to be able to connect the payment module to your PrestaShop.
 
 ### via PrestaShop FTP Uploader
 
@@ -18,8 +18,8 @@ Before we start the installation, please create an account on Cointopay.com. Not
 
 3. Click **Add a new module**, then click **Choose a file**, find the file you just downloaded, select it and click **Open**. Click **Upload this module**.
 
-4. In the **Modules list** choose **Payment and Gateways**.
+4. In the **Modules list** choose **Modules & Services**.
 
 5. Find **Cointopay International** and click **Configure** button to next to it, then click **Proceed with the installation**.
 
-6. Enter your [API credentials](https://cointopay.com) (*Merchant ID* , *Security Code*, *Select crypto currency* ). crypto currency will listed according to selected coins. and click **Save**.
+6. Enter your [API credentials](https://cointopay.com) (*Merchant ID* , *Security Code*, *Select crypto currency* ). crypto currency will listed according to selected coins at <https://cointpay.com>. and click **Save**.
