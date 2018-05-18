@@ -47,13 +47,12 @@ class CointopayRedirectModuleFrontController extends ModuleFrontController
           'user_agent' => 'Cointopay - Prestashop v'._PS_VERSION_.' Extension v'.COINTOPAY_PRESTASHOP_EXTENSION_VERSION
         );
 
-
         \Cointopay\Cointopay::config($ctpConfig);
 
         $order = \Cointopay\Merchant\Order::createOrFail(array(
             'order_id'         => $cart->id,
             'price'            => $total,
-            'currency'         => $currency->iso_code,
+            'currency'         => $this->currencyCode($currency->iso_code),
             'cancel_url'       => $this->flash_encode($this->context->link->getModuleLink('cointopay', 'cancel')),
             'callback_url'     => $this->flash_encode($this->context->link->getModuleLink('cointopay', 'callback')),
             'success_url'      => $success_url,
@@ -85,10 +84,31 @@ class CointopayRedirectModuleFrontController extends ModuleFrontController
         }
     }
 
-
+    /**
+     * URL encode to UTF-8
+     *
+     * @param $input
+     * @return string
+     */
     public function flash_encode ($input)
     {
         return rawurlencode(utf8_encode($input));
     }
 
+    /**
+     * Currency code
+     * @param $isoCode
+     * @return string
+     */
+    public function currencyCode($isoCode){
+
+        $currencyCode='';
+
+        if( isset($isoCode) && ($isoCode == 'RUB')){
+            $currencyCode='RUR';
+        }else{
+            $currencyCode= $isoCode;
+        }
+        return $currencyCode;
+    }
 }
