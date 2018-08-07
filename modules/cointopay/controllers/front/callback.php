@@ -12,7 +12,6 @@ class CointopayCallbackModuleFrontController extends ModuleFrontController
         $cart_id = (int)Tools::getValue('CustomerReferenceNr');
         $order_id = Order::getOrderByCartId($cart_id);
         $order = new Order($order_id);
-
         try {
             if (!$order) {
                 $error_message = 'Cointopay Order #' . Tools::getValue('order_id') . ' does not exists';
@@ -23,8 +22,20 @@ class CointopayCallbackModuleFrontController extends ModuleFrontController
 
             $ctp_order_status = Tools::getValue('status');
             $notenough = Tools::getValue('notenough');
+            $data = [
+                'merchantId' => Configuration::get('COINTOPAY_MERCHANT_ID'),
+                'TransactionID' => Tools::getValue('TransactionID'),
+                'ConfirmCode' => Tools::getValue('ConfirmCode'),
+                'Status' => $ctp_order_status,
+            ];
+            $response  = $this->validateResponse($data);
 
-            if ($ctp_order_status == 'paid' && $notenough == 0 ) {
+            if(!$response) {
+                $error_message = 'Data deprecated ! Response data doesn\'t match to Cointopay';
+                $this->logError($error_message, $cart_id);
+                throw new Exception($error_message);
+
+            }elseif ($ctp_order_status == 'paid' && $notenough == 0 ) {
                 $order_status = 'PS_OS_PAYMENT';
             }
             elseif ($ctp_order_status == 'paid' && $notenough == 1) {
@@ -62,7 +73,8 @@ class CointopayCallbackModuleFrontController extends ModuleFrontController
 
                 Tools::redirect($success_url);
 
-            } elseif ($order_status == 'COINTOPAY_FAILED' || $order_status == 'PS_OS_CANCELED'
+            }
+            elseif ($order_status == 'COINTOPAY_FAILED' || $order_status == 'PS_OS_CANCELED'
                 || $order_status == 'COINTOPAY_PNOTENOUGH' || $order_status == 'PS_OS_REFUND' )
             {
                 $history = new OrderHistory();
@@ -88,6 +100,29 @@ class CointopayCallbackModuleFrontController extends ModuleFrontController
         } else {
             $this->setTemplate('payment_callback.tpl');
         }
+    }
+
+    public function validateResponse($response) {
+        $validate = true;
+        $merchant_id = $response['merchantId'];
+        $transaction_id = $response['TransactionID'];
+        $confirm_code = $response['ConfirmCode'];
+        $url = "https://app.cointopay.com/v2REAPI?MerchantID=$merchant_id&Call=QA&APIKey=_&output=json&TransactionID=$transaction_id&ConfirmCode=$confirm_code";
+        $curl = curl_init($url);
+        curl_setopt_array($curl, array(
+            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_SSL_VERIFYPEER => 0
+        ));
+        $result = curl_exec($curl);
+        $result = json_decode($result, true);
+        if(!$result || !is_array($result)) {
+            $validate = false;
+        }else{
+            if($response['Status'] != $result['Status']) {
+                $validate = false;
+            }
+        }
+        return $validate;
     }
 
     private function logError($message, $cart_id)
