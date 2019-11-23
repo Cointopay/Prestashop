@@ -24,6 +24,8 @@ Note down the MerchantID, SecurityCode and Currency, information is located in t
 
 6. Enter your [API credentials](https://cointopay.com) (*Merchant ID* , *Security Code*, *Select crypto currency* ). Crypto currencies will be listed according to the selected coins (Account>Wallet Preference) at <https://cointopay.com>. and click **Save**.
 
+NOTE: Communication based between prestashop and Cointopay system is based on CART ID, this is not the same as Order ID! Please keep that in mind.
+
 ### Support or Contact
 Please contact support@cointopay.com for feature requests and/or incidents, or create a ticket here: https://cointopay.freshdesk.com/helpdesk
 
