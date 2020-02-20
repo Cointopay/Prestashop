@@ -1,4 +1,28 @@
 <?php
+/**
+ * 2007-2019 PrestaShop and Contributors
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/OSL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to https://www.prestashop.com for more information.
+ *
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2019 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
+ */
 
 require_once(_PS_MODULE_DIR_ . '/cointopay/vendor/cointopay/init.php');
 require_once(_PS_MODULE_DIR_ . '/cointopay/vendor/version.php');
@@ -7,51 +31,36 @@ class CointopayCallbackModuleFrontController extends ModuleFrontController
 {
     public $ssl = true;
 
-    public function postProcess()
+    public function initContent()
     {
-        $cart_id = (int)Tools::getValue('CustomerReferenceNr');
+        parent::initContent();
+        
+        $cart_id = Tools::getValue('CustomerReferenceNr');
+        
         $order_id = Order::getOrderByCartId($cart_id);
+        
         $order = new Order($order_id);
+
         try {
             if (!$order) {
-                $error_message = 'Cointopay Order #' . Tools::getValue('order_id') . ' does not exists';
+                $error_message = 'Cointopay Order #' . Tools::getValue('CustomerReferenceNr') . ' does not exists';
 
                 $this->logError($error_message, $cart_id);
                 throw new Exception($error_message);
             }
 
             $ctp_order_status = Tools::getValue('status');
-            $notenough = Tools::getValue('notenough');
-            $data = [
-                'merchantId' => Configuration::get('COINTOPAY_MERCHANT_ID'),
-                'TransactionID' => Tools::getValue('TransactionID'),
-                'ConfirmCode' => Tools::getValue('ConfirmCode'),
-                'Status' => $ctp_order_status,
-            ];
-            $response  = $this->validateResponse($data);
 
-            if(!$response) {
-                $error_message = 'Data deprecated ! Response data doesn\'t match to Cointopay';
-                $this->logError($error_message, $cart_id);
-                throw new Exception($error_message);
-
-            }elseif ($ctp_order_status == 'paid' && $notenough == 0 ) {
+            if ($ctp_order_status == 'paid') {
                 $order_status = 'PS_OS_PAYMENT';
-            }
-            elseif ($ctp_order_status == 'paid' && $notenough == 1) {
-                $order_status = 'COINTOPAY_PNOTENOUGH';
-            }
-            elseif ($ctp_order_status == 'failed') {
+            } elseif ($ctp_order_status == 'failed') {
                 $order_status = 'COINTOPAY_FAILED';
                 $this->logError('PS Orders is failed', $cart_id);
-            }
-            elseif ($ctp_order_status == 'canceled') {
+            } elseif ($ctp_order_status == 'canceled') {
                 $order_status = 'PS_OS_CANCELED';
-            }
-            elseif ($ctp_order_status == 'refunded') {
+            } elseif ($ctp_order_status == 'refunded') {
                 $order_status = 'PS_OS_REFUND';
-            }
-            else {
+            } else {
                 $order_status = false;
             }
 
@@ -60,28 +69,20 @@ class CointopayCallbackModuleFrontController extends ModuleFrontController
                 $history->id_order = $order->id;
                 $history->changeIdOrderState((int)Configuration::get($order_status), $order->id);
                 $history->addWithemail(true, array(
-                    'order_name' => Tools::getValue('order_id'),
+                    'order_name' => Tools::getValue('CustomerReferenceNr'),
                 ));
-
-                // Success URL
-                $link = new Link();
-                $success_url = $link->getPageLink('order-confirmation', null, null, array(
-                    'id_cart' => $order->id_cart,
-                    'id_module' => $this->module->id,
-                    'key' => $order->secure_key
-                ));
-
-                Tools::redirect($success_url);
-
-            }
-            elseif ($order_status == 'COINTOPAY_FAILED' || $order_status == 'PS_OS_CANCELED'
-                || $order_status == 'COINTOPAY_PNOTENOUGH' || $order_status == 'PS_OS_REFUND' )
-            {
+                $this->context->smarty->assign(array('text' => $cart_id));
+                if (_PS_VERSION_ >= '1.7') {
+                    $this->setTemplate('module:cointopay/views/templates/front/ctp_payment_success.tpl');
+                } else {
+                    $this->setTemplate('ctp_payment_success.tpl');
+                }
+            } elseif ($order_status == 'COINTOPAY_PNOTENOUGH' || $order_status == 'PS_OS_REFUND') {
                 $history = new OrderHistory();
                 $history->id_order = $order->id;
                 $history->changeIdOrderState((int)Configuration::get($order_status), $order->id);
                 $history->addWithemail(true, array(
-                    'order_name' => Tools::getValue('order_id'),
+                    'order_name' => Tools::getValue('CustomerReferenceNr'),
                 ));
 
                 Tools::redirect($this->context->link->getModuleLink('cointopay', 'cancel'));
@@ -95,34 +96,12 @@ class CointopayCallbackModuleFrontController extends ModuleFrontController
                 'text' => get_class($e) . ': ' . $e->getMessage()
             ));
         }
+        
         if (_PS_VERSION_ >= '1.7') {
-            $this->setTemplate('module:cointopay/views/templates/front/payment_callback.tpl');
+            $this->setTemplate('module:cointopay/views/templates/front/ctp_payment_callback.tpl');
         } else {
-            $this->setTemplate('payment_callback.tpl');
+            $this->setTemplate('cpt_payment_callback.tpl');
         }
-    }
-
-    public function validateResponse($response) {
-        $validate = true;
-        $merchant_id = $response['merchantId'];
-        $transaction_id = $response['TransactionID'];
-        $confirm_code = $response['ConfirmCode'];
-        $url = "https://app.cointopay.com/v2REAPI?MerchantID=$merchant_id&Call=QA&APIKey=_&output=json&TransactionID=$transaction_id&ConfirmCode=$confirm_code";
-        $curl = curl_init($url);
-        curl_setopt_array($curl, array(
-            CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_SSL_VERIFYPEER => 0
-        ));
-        $result = curl_exec($curl);
-        $result = json_decode($result, true);
-        if(!$result || !is_array($result)) {
-            $validate = false;
-        }else{
-            if($response['Status'] != $result['Status']) {
-                $validate = false;
-            }
-        }
-        return $validate;
     }
 
     private function logError($message, $cart_id)

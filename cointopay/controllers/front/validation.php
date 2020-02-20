@@ -27,7 +27,11 @@
 /**
  * @since 1.5.0
  */
-class PaymentExampleValidationModuleFrontController extends ModuleFrontController
+ 
+require_once(_PS_MODULE_DIR_ . '/cointopay/vendor/cointopay/init.php');
+require_once(_PS_MODULE_DIR_ . '/cointopay/vendor/version.php');
+
+class CointopayValidationModuleFrontController extends ModuleFrontController
 {
     /**
      * @see FrontController::postProcess()
@@ -42,7 +46,7 @@ class PaymentExampleValidationModuleFrontController extends ModuleFrontControlle
         // Check that this payment option is still available in case the customer changed his address just before the end of the checkout process
         $authorized = false;
         foreach (Module::getPaymentModules() as $module) {
-            if ($module['name'] == 'paymentexample') {
+            if ($module['name'] == 'cointopay') {
                 $authorized = true;
                 break;
             }
@@ -52,27 +56,91 @@ class PaymentExampleValidationModuleFrontController extends ModuleFrontControlle
             die($this->module->l('This payment method is not available.', 'validation'));
         }
 
-        $this->context->smarty->assign([
-            'params' => $_REQUEST,
-        ]);
-
         //$this->setTemplate('payment_return.tpl');
-        $this->setTemplate('module:paymentexample/views/templates/front/payment_return.tpl');
+        //$this->setTemplate('module:paymentexample/views/templates/front/payment_return.tpl');
 
 
-        // $customer = new Customer($cart->id_customer);
-        // if (!Validate::isLoadedObject($customer))
-        //     Tools::redirect('index.php?controller=order&step=1');
+         $customer = new Customer($cart->id_customer);
+         if (!Validate::isLoadedObject($customer))
+             Tools::redirect('index.php?controller=order&step=1');
 
-        // $currency = $this->context->currency;
-        // $total = (float)$cart->getOrderTotal(true, Cart::BOTH);
-        // $mailVars = array(
-        //     '{bankwire_owner}' => Configuration::get('BANK_WIRE_OWNER'),
-        //     '{bankwire_details}' => nl2br(Configuration::get('BANK_WIRE_DETAILS')),
-        //     '{bankwire_address}' => nl2br(Configuration::get('BANK_WIRE_ADDRESS'))
-        // );
+         $currency = $this->context->currency;
+         $total = (float)$cart->getOrderTotal(true, Cart::BOTH);
+         $mailVars = array(
+            '{bankwire_owner}' => Configuration::get('BANK_WIRE_OWNER'),
+             '{bankwire_details}' => nl2br(Configuration::get('BANK_WIRE_DETAILS')),
+            '{bankwire_address}' => nl2br(Configuration::get('BANK_WIRE_ADDRESS'))
+        );
+    
+         $this->module->validateOrder($cart->id, Configuration::get('PS_OS_BANKWIRE'), $total, $this->module->displayName, NULL, $mailVars, (int)$currency->id, false, $customer->secure_key);
+		 $link = new Link();
+        $success_url = '';
+		$success_url = $link->getPageLink('order-confirmation', null, null, array(
+          'id_cart'     => $cart->id,
+          'id_module'   => $this->module->id,
+          'key'         => $customer->secure_key
+        ));
+		$description = array();
+        foreach ($cart->getProducts() as $product) {
+            $description[] = $product['cart_quantity'] . ' × ' . $product['name'];
+        }
+		$merchant_id = Configuration::get('COINTOPAY_MERCHANT_ID');
+        $security_code = Configuration::get('COINTOPAY_SECURITY_CODE');
+        $user_currency = Configuration::get('COINTOPAY_CRYPTO_CURRENCY');
+        $selected_currency = (isset($user_currency) && !empty($user_currency)) ? $user_currency : 1;
+        $ctpConfig = array(
+          'merchant_id' => $merchant_id,
+          'security_code'=>$security_code,
+          'selected_currency'=>$selected_currency,
+          'user_agent' => 'Cointopay - Prestashop v'._PS_VERSION_.' Extension v'.COINTOPAY_PRESTASHOP_EXTENSION_VERSION
+        );
 
-        // $this->module->validateOrder($cart->id, Configuration::get('PS_OS_BANKWIRE'), $total, $this->module->displayName, NULL, $mailVars, (int)$currency->id, false, $customer->secure_key);
-        // Tools::redirect('index.php?controller=order-confirmation&id_cart='.$cart->id.'&id_module='.$this->module->id.'&id_order='.$this->module->currentOrder.'&key='.$customer->secure_key);
+        \Cointopay\Cointopay::config($ctpConfig);
+        $order = \Cointopay\Merchant\Order::createOrFail(array(
+            'order_id'         => $this->module->currentOrder,
+            'price'            => $total,
+            'currency'         => $this->currencyCode($currency->iso_code),
+            'cancel_url'       => $this->flashEncode($this->context->link->getModuleLink('cointopay', 'cancel')),
+            'callback_url'     => $this->flashEncode($this->context->link->getModuleLink('cointopay', 'callback')),
+            'success_url'      => $success_url,
+            'title'            => Configuration::get('PS_SHOP_NAME') . ' Order #' . $cart->id,
+            'description'      => join($description, ', '),
+            'selected_currency'=> $selected_currency
+        ));
+         
+        if (isset($order)) {
+        Tools::redirect('index.php?controller=order-confirmation&id_cart='.$cart->id.'&id_module='.$this->module->id.'&id_order='.$this->module->currentOrder.'&key='.$customer->secure_key.'&QRCodeURL='.$this->flashEncode($order->QRCodeURL).'&TransactionID='.$order->TransactionID.'&CoinName='.$order->CoinName.'&RedirectURL='.$order->shortURL.'&merchant_id='.$merchant_id.'&ExpiryTime='.$order->ExpiryTime.'&Amount='.$order->Amount.'&CustomerReferenceNr='.$order->CustomerReferenceNr.'&coinAddress='.$order->coinAddress);
+		}
+		else {
+            Tools::redirect('index.php?controller=order&step=3');
+        }
+    }
+	/**
+     * URL encode to UTF-8
+     *
+     * @param $input
+     * @return string
+     */
+    public function flashEncode($input)
+    {
+        return rawurlencode(utf8_encode($input));
+    }
+
+    /**
+     * Currency code
+     * @param $isoCode
+     * @return string
+     */
+    public function currencyCode($isoCode)
+    {
+        $currencyCode='';
+
+        if (isset($isoCode) && ($isoCode == 'RUB')) {
+            $currencyCode='RUR';
+        } else {
+            $currencyCode= $isoCode;
+        }
+        
+        return $currencyCode;
     }
 }

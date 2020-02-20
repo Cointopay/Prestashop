@@ -1,6 +1,6 @@
 <?php
-/*
-* 2007-2015 PrestaShop
+/**
+* 2010-2014 PrestaShop
 *
 * NOTICE OF LICENSE
 *
@@ -19,7 +19,8 @@
 * needs please refer to http://www.prestashop.com for more information.
 *
 *  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2015 PrestaShop SA
+*  @copyright  2010-2014 PrestaShop SA
+
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *  International Registered Trademark & Property of PrestaShop SA
 */
@@ -46,7 +47,6 @@ class Cointopay extends PaymentModule
         $this->version = '1.0.0';
         $this->ps_versions_compliancy = array('min' => '1.7', 'max' => _PS_VERSION_);
         $this->author = 'Cointopay.com';
-        $this->controllers = array('validation');
         $this->is_eu_compatible = 1;
 
         $this->currencies = true;
@@ -137,35 +137,35 @@ class Cointopay extends PaymentModule
 
         if ($order_processing->add()) {
             copy(
-                _PS_ROOT_DIR_ . '/modules/cointopay/logo.png',
+                _PS_ROOT_DIR_ . '/modules/cointopay/views/img/logo.png',
                 _PS_ROOT_DIR_ . '/img/os/' . (int)$order_processing->id . '.png'
             );
         }
 
         if ($order_failed->add()) {
             copy(
-                _PS_ROOT_DIR_ . '/modules/cointopay/logo.png',
+                _PS_ROOT_DIR_ . '/modules/cointopay/views/img/logo.png',
                 _PS_ROOT_DIR_ . '/img/os/' . (int)$order_failed->id . '.png'
             );
         }
 
         if ($order_expired->add()) {
             copy(
-                _PS_ROOT_DIR_ . '/modules/cointopay/logo.png',
+                _PS_ROOT_DIR_ . '/modules/cointopay/views/img/logo.png',
                 _PS_ROOT_DIR_ . '/img/os/' . (int)$order_expired->id . '.png'
             );
         }
 
         if ($order_invalid->add()) {
             copy(
-                _PS_ROOT_DIR_ . '/modules/cointopay/logo.png',
+                _PS_ROOT_DIR_ . '/modules/cointopay/views/img/logo.png',
                 _PS_ROOT_DIR_ . '/img/os/' . (int)$order_invalid->id . '.png'
             );
         }
 
         if ($order_not_enough->add()) {
             copy(
-                _PS_ROOT_DIR_ . '/modules/cointopay/logo.png',
+                _PS_ROOT_DIR_ . '/modules/cointopay/views/img/logo.png',
                 _PS_ROOT_DIR_ . '/img/os/' . (int)$order_not_enough->id . '.png'
             );
         }
@@ -178,10 +178,11 @@ class Cointopay extends PaymentModule
         Configuration::updateValue('COINTOPAY_INVALID', $order_invalid->id);
 
         if (!parent::install()
-            || !$this->registerHook('payment')
             || !$this->registerHook('displayPaymentEU')
             || !$this->registerHook('paymentReturn')
             || !$this->registerHook('paymentOptions')
+            || !$this->registerHook('orderConfirmation')
+            
         ) {
             return false;
         }
@@ -388,28 +389,6 @@ class Cointopay extends PaymentModule
         return $this->display(__FILE__, 'infos.tpl');
     }
 
-    public function hookPayment($params)
-    {
-        if (_PS_VERSION_ >= 1.7) {
-            return;
-        }
-
-        if (!$this->active) {
-            return;
-        }
-
-        if (!$this->checkCurrency($params['cart'])) {
-            return;
-        }
-
-        $this->smarty->assign(array(
-            'this_path' => $this->_path,
-            'this_path_bw' => $this->_path,
-            'this_path_ssl' => Tools::getShopDomainSsl(true, true) . __PS_BASE_URI__ . 'modules/' . $this->name . '/',
-        ));
-
-        return $this->display(__FILE__, 'payment.tpl');
-    }
 
     public function checkCurrency($cart)
     {
@@ -427,27 +406,23 @@ class Cointopay extends PaymentModule
         return false;
     }
 
-    public function hookDisplayOrderConfirmation($params)
+    public function hookPaymentReturn($params)
     {
-        if (_PS_VERSION_ <= 1.7) {
-            return;
-        }
-
+        /**
+         * Verify if this module is enabled
+         */
         if (!$this->active) {
             return;
         }
+        $this->context->controller->addJS($this->_path . '/views/js/cointopay_custom.js', 'all');
 
-        if (!$this->checkCurrency($params['cart'])) {
-            return;
+        array_push($params, $_REQUEST);
+        
+        if (isset($_REQUEST['CustomerReferenceNr'])) {
+			$_REQUEST['QRCodeURL'] = $_REQUEST['QRCodeURL'];
+			$this->smarty->assign('getparams', $_REQUEST);
+            return $this->context->smarty->fetch('module:cointopay/views/templates/hook/presta_cointopay_order_info.tpl');
         }
-
-        $this->smarty->assign(array(
-            'this_path' => $this->_path,
-            'this_path_bw' => $this->_path,
-            'this_path_ssl' => Tools::getShopDomainSsl(true, true) . __PS_BASE_URI__ . 'modules/' . $this->name . '/',
-        ));
-
-        return $this->context->smarty->fetch(__FILE__, 'payment.tpl');
     }
 
     public function hookPaymentOptions($params)
@@ -462,13 +437,16 @@ class Cointopay extends PaymentModule
 
         $newOption = new PrestaShop\PrestaShop\Core\Payment\PaymentOption();
         $newOption->setCallToActionText($this->displayName)
-            ->setAction($this->context->link->getModuleLink($this->name, 'redirect', array(), true))
+		->setAction($this->context->link->getModuleLink($this->name, 'validation', array(), true))
             ->setAdditionalInformation(
-                $this->context->smarty->fetch('module:cointopay/views/templates/hook/cointopay_intro.tpl'))
+                $this->context->smarty->fetch('module:cointopay/views/templates/hook/cointopay_intro.tpl')
+            )
             ->setLogo(Media::getMediaPath(_PS_MODULE_DIR_ . $this->name . '/order-page.png'));
 
         $paymentOptions = array($newOption);
 
         return $paymentOptions;
     }
+
+	
 }

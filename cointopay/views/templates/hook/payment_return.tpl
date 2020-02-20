@@ -1,5 +1,4 @@
-<?php
-/**
+{**
  * 2007-2019 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
@@ -22,29 +21,19 @@
  * @copyright 2007-2019 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * International Registered Trademark & Property of PrestaShop SA
- */
+ *}
 
-require_once(dirname(__FILE__) . '../../../config/config.inc.php');
-require_once(dirname(__FILE__) . '../../../init.php');
+{extends "$layout"}
 
-// get merchant coins
-if (Tools::getIsset('merchant')) {
-    $merchant = Tools::getValue('merchant');
-
-    $url = 'https://cointopay.com/CloneMasterTransaction?MerchantID=' . $merchant . '&output=json&JsonArray=1';
-    $curl = curl_init();
-    curl_setopt_array($curl, array(
-        CURLOPT_RETURNTRANSFER => 1,
-        CURLOPT_URL => $url,
-    ));
-    $response = curl_exec($curl);
-
-    $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-    curl_close($curl);
-
-    if ($http_status === 200) {
-        print_r($response);
-    } else {
-        echo "no coins";
-    }
-}
+{block name="content"}
+  <section>
+    <p>{l s='You have successfully submitted your payment form.' mod='cointopay'}</p>
+    <p>{l s='Here are the params:' mod='cointopay'}</p>
+    <ul>
+      {foreach from=$params key=name item=value}
+        <li>{$this_path|escape:'htmlall':'UTF-8'}: {$value|escape:'htmlall':'UTF-8'}</li>
+      {/foreach}
+    </ul>
+    <p>{l s='Now, you just need to proceed the payment and do what you need to do.' mod='cointopay'}</p>
+  </section>
+{/block}
