@@ -35,9 +35,10 @@ class CointopayCallbackModuleFrontController extends ModuleFrontController
     {
         parent::initContent();
         
-        $cart_id = Tools::getValue('CustomerReferenceNr');
+        //$cart_id = Tools::getValue('CustomerReferenceNr');
+		$cart = $this->context->cart;
         
-        $order_id = Order::getOrderByCartId($cart_id);
+        $order_id = Tools::getValue('CustomerReferenceNr');
         
         $order = new Order($order_id);
 
@@ -45,7 +46,7 @@ class CointopayCallbackModuleFrontController extends ModuleFrontController
             if (!$order) {
                 $error_message = 'Cointopay Order #' . Tools::getValue('CustomerReferenceNr') . ' does not exists';
 
-                $this->logError($error_message, $cart_id);
+                $this->logError($error_message, $order_id);
                 throw new Exception($error_message);
             }
 
@@ -55,7 +56,7 @@ class CointopayCallbackModuleFrontController extends ModuleFrontController
                 $order_status = 'PS_OS_PAYMENT';
             } elseif ($ctp_order_status == 'failed') {
                 $order_status = 'COINTOPAY_FAILED';
-                $this->logError('PS Orders is failed', $cart_id);
+                $this->logError('PS Orders is failed', $order_id);
             } elseif ($ctp_order_status == 'canceled') {
                 $order_status = 'PS_OS_CANCELED';
             } elseif ($ctp_order_status == 'refunded') {
@@ -71,7 +72,7 @@ class CointopayCallbackModuleFrontController extends ModuleFrontController
                 $history->addWithemail(true, array(
                     'order_name' => Tools::getValue('CustomerReferenceNr'),
                 ));
-                $this->context->smarty->assign(array('text' => $cart_id));
+                $this->context->smarty->assign(array('text' => $order_id));
                 if (_PS_VERSION_ >= '1.7') {
                     $this->setTemplate('module:cointopay/views/templates/front/ctp_payment_success.tpl');
                 } else {
