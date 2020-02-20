@@ -24,10 +24,89 @@
  * International Registered Trademark & Property of PrestaShop SA
  */
 
+require_once(_PS_MODULE_DIR_ . '/cointopay/vendor/cointopay/init.php');
+require_once(_PS_MODULE_DIR_ . '/cointopay/vendor/version.php');
+
 class CointopayCancelModuleFrontController extends ModuleFrontController
 {
-    public function postProcess()
+    public $ssl = true;
+
+    public function initContent()
     {
-        Tools::redirect('index.php?controller=order&step=1');
+        parent::initContent();
+        
+        //$cart_id = Tools::getValue('CustomerReferenceNr');
+		$cart = $this->context->cart;
+        
+        $order_id = Tools::getValue('CustomerReferenceNr');
+        
+        $order = new Order($order_id);
+
+        try {
+            if (!$order) {
+                $error_message = 'Cointopay Order #' . Tools::getValue('CustomerReferenceNr') . ' does not exists';
+
+                $this->logError($error_message, $order_id);
+                throw new Exception($error_message);
+            }
+
+            $ctp_order_status = Tools::getValue('status');
+
+            if ($ctp_order_status == 'paid') {
+                $order_status = 'PS_OS_PAYMENT';
+            } elseif ($ctp_order_status == 'failed') {
+                $order_status = 'COINTOPAY_FAILED';
+                $this->logError('PS Orders is failed', $order_id);
+            } elseif ($ctp_order_status == 'canceled') {
+                $order_status = 'PS_OS_CANCELED';
+            } elseif ($ctp_order_status == 'refunded') {
+                $order_status = 'PS_OS_REFUND';
+            } else {
+                $order_status = false;
+            }
+
+            if ($order_status !== false && $order_status == 'PS_OS_PAYMENT') {
+                $history = new OrderHistory();
+                $history->id_order = $order->id;
+                $history->changeIdOrderState((int)Configuration::get($order_status), $order->id);
+                $history->addWithemail(true, array(
+                    'order_name' => Tools::getValue('CustomerReferenceNr'),
+                ));
+                $this->context->smarty->assign(array('text' => $order_id));
+                if (_PS_VERSION_ >= '1.7') {
+                    $this->setTemplate('module:cointopay/views/templates/front/ctp_payment_cancel.tpl');
+                } else {
+                    $this->setTemplate('ctp_payment_success.tpl');
+                }
+            } elseif ($order_status == 'COINTOPAY_PNOTENOUGH' || $order_status == 'PS_OS_REFUND') {
+                $history = new OrderHistory();
+                $history->id_order = $order->id;
+                $history->changeIdOrderState((int)Configuration::get($order_status), $order->id);
+                $history->addWithemail(true, array(
+                    'order_name' => Tools::getValue('CustomerReferenceNr'),
+                ));
+
+                Tools::redirect($this->context->link->getModuleLink('cointopay', 'cancel'));
+            } else {
+                $this->context->smarty->assign(array(
+                    'text' => 'Order Status ' . $ctp_order_status . ' not implemented'
+                ));
+            }
+        } catch (Exception $e) {
+            $this->context->smarty->assign(array(
+                'text' => get_class($e) . ': ' . $e->getMessage()
+            ));
+        }
+        
+        if (_PS_VERSION_ >= '1.7') {
+            $this->setTemplate('module:cointopay/views/templates/front/cointopay_payment_cancel.tpl');
+        } else {
+            $this->setTemplate('ctp_payment_cancel.tpl');
+        }
+    }
+
+    private function logError($message, $cart_id)
+    {
+        PrestaShopLogger::addLog($message, 3, null, 'Cart', $cart_id, true);
     }
 }
