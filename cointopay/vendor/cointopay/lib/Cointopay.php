@@ -71,7 +71,19 @@ class Cointopay
 
             $result = self::callApi($url, $user_agent);
             return $result;
-        } else {
+        } 
+		elseif ($url == 'validation') {
+			 if (isset($params) && !empty($params)) {
+				$TransactionID = $params['TransactionID'];
+				$ConfirmCode = $params['ConfirmCode'];
+				$selected_currency = (isset($params['selected_currency']) && !empty($params['selected_currency'])) ? $params['selected_currency'] : 1;
+			   }
+            $url = "v2REAPI?MerchantID=$merchant_id&Call=QA&APIKey=_&output=json&TransactionID=$TransactionID&ConfirmCode=$ConfirmCode";
+
+            $result = self::callApi($url, $user_agent);
+            return $result;
+        }	
+		else {
 
             $url = "MerchantAPI?Checkout=true&MerchantID=$merchant_id&Amount=$amount&AltCoinID=$selected_currency&CustomerReferenceNr=$order_id&SecurityCode=$security_code&inputCurrency=$currency&output=json&testmerchant";
             $result = self::callApi($url, $user_agent);

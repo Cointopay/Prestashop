@@ -18,6 +18,11 @@ class Order extends Merchant
         $order = Cointopay::request('orders', 'GET', $params, $authentication);
         return new self($order);
     }
+	public static function ValidateOrder($params, $options = array(), $authentication = array())
+    {
+        $order = Cointopay::request('validation', 'GET', $params, $authentication);
+        return new self($order);
+    }
 
     public function toHash()
     {
