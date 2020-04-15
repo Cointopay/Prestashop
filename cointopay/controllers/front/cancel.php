@@ -43,6 +43,16 @@ class CointopayCancelModuleFrontController extends ModuleFrontController
 		$TransactionID = Tools::getValue('TransactionID');
 		
 		$ConfirmCode = Tools::getValue('ConfirmCode');
+		
+		$AltCoinID = Tools::getValue('AltCoinID');
+		
+		$MerchantID = Tools::getValue('MerchantID');
+		
+		$CoinAddressUsed = Tools::getValue('CoinAddressUsed');
+		
+		$SecurityCode = Tools::getValue('SecurityCode');
+		
+		$inputCurrency = Tools::getValue('inputCurrency');
 		        
         $order = new Order($order_id);
 
@@ -73,9 +83,81 @@ class CointopayCancelModuleFrontController extends ModuleFrontController
 			));
          
             if (isset($response_ctp)) {
-				if($response_ctp->Status !== $ctp_order_status)
+				if($response_ctp->data['Security'] != $ConfirmCode)
 				{
-				   $this->context->smarty->assign(array('text' => 'We have detected different order status. Your order has been halted.'));
+				   $this->context->smarty->assign(array('text' => $response_ctp->data->Security.'Data mismatch! ConfirmCode doesn\'t match'));
+					if (_PS_VERSION_ >= '1.7') {
+						$this->setTemplate('module:cointopay/views/templates/front/cointopay_payment_cancel.tpl');
+					} else {
+						$this->setTemplate('cointopay_payment_cancel.tpl');
+					}
+				}
+				elseif($response_ctp->data['CustomerReferenceNr'] != $order_id)
+				{
+				   $this->context->smarty->assign(array('text' => 'Data mismatch! CustomerReferenceNr doesn\'t match'));
+					if (_PS_VERSION_ >= '1.7') {
+						$this->setTemplate('module:cointopay/views/templates/front/cointopay_payment_cancel.tpl');
+					} else {
+						$this->setTemplate('cointopay_payment_cancel.tpl');
+					}
+				}
+				elseif($response_ctp->data['TransactionID'] != $TransactionID)
+				{
+				   $this->context->smarty->assign(array('text' => 'Data mismatch! TransactionID doesn\'t match'));
+					if (_PS_VERSION_ >= '1.7') {
+						$this->setTemplate('module:cointopay/views/templates/front/cointopay_payment_cancel.tpl');
+					} else {
+						$this->setTemplate('cointopay_payment_cancel.tpl');
+					}
+				}
+				elseif($response_ctp->data['AltCoinID'] != $AltCoinID)
+				{
+				   $this->context->smarty->assign(array('text' => 'Data mismatch! AltCoinID doesn\'t match'));
+					if (_PS_VERSION_ >= '1.7') {
+						$this->setTemplate('module:cointopay/views/templates/front/cointopay_payment_cancel.tpl');
+					} else {
+						$this->setTemplate('cointopay_payment_cancel.tpl');
+					}
+				}
+				elseif($response_ctp->data['MerchantID'] != $MerchantID)
+				{
+				   $this->context->smarty->assign(array('text' => 'Data mismatch! MerchantID doesn\'t match'));
+					if (_PS_VERSION_ >= '1.7') {
+						$this->setTemplate('module:cointopay/views/templates/front/cointopay_payment_cancel.tpl');
+					} else {
+						$this->setTemplate('cointopay_payment_cancel.tpl');
+					}
+				}
+				elseif($response_ctp->data['coinAddress'] != $CoinAddressUsed)
+				{
+				   $this->context->smarty->assign(array('text' => 'Data mismatch! coinAddress doesn\'t match'));
+					if (_PS_VERSION_ >= '1.7') {
+						$this->setTemplate('module:cointopay/views/templates/front/cointopay_payment_cancel.tpl');
+					} else {
+						$this->setTemplate('cointopay_payment_cancel.tpl');
+					}
+				}
+				elseif($response_ctp->data['SecurityCode'] != $SecurityCode)
+				{
+				   $this->context->smarty->assign(array('text' => 'Data mismatch! SecurityCode doesn\'t match'));
+					if (_PS_VERSION_ >= '1.7') {
+						$this->setTemplate('module:cointopay/views/templates/front/cointopay_payment_cancel.tpl');
+					} else {
+						$this->setTemplate('cointopay_payment_cancel.tpl');
+					}
+				}
+				elseif($response_ctp->data['inputCurrency'] != $inputCurrency)
+				{
+				   $this->context->smarty->assign(array('text' => 'Data mismatch! inputCurrency doesn\'t match'));
+					if (_PS_VERSION_ >= '1.7') {
+						$this->setTemplate('module:cointopay/views/templates/front/cointopay_payment_cancel.tpl');
+					} else {
+						$this->setTemplate('cointopay_payment_cancel.tpl');
+					}
+				}
+				elseif($response_ctp->data['Status'] != $ctp_order_status)
+				{
+				   $this->context->smarty->assign(array('text' => 'We have detected different order status. Your order status is '.$response_ctp->data['Status']));
 					if (_PS_VERSION_ >= '1.7') {
 						$this->setTemplate('module:cointopay/views/templates/front/cointopay_payment_cancel.tpl');
 					} else {
@@ -83,7 +165,6 @@ class CointopayCancelModuleFrontController extends ModuleFrontController
 					}
 				}
 				else{
-					if($response_ctp->CustomerReferenceNr === $order_id){
 					if ($ctp_order_status == 'paid') {
 						$order_status = 'PS_OS_PAYMENT';
 					} elseif ($ctp_order_status == 'failed') {
@@ -124,15 +205,7 @@ class CointopayCancelModuleFrontController extends ModuleFrontController
 							'text' => 'Order Status ' . $ctp_order_status . ' not implemented'
 						));
 					}
-					}
-					else{
-						$this->context->smarty->assign(array('text' => 'We have detected different CustomerReferenceNr. Your order has been halted.'));
-						if (_PS_VERSION_ >= '1.7') {
-							$this->setTemplate('module:cointopay/views/templates/front/cointopay_payment_cancel.tpl');
-						} else {
-							$this->setTemplate('cointopay_payment_cancel.tpl');
-						}
-					}
+					
 				}
 			}
 			else {

@@ -74,11 +74,10 @@ class Cointopay
         } 
 		elseif ($url == 'validation') {
 			 if (isset($params) && !empty($params)) {
-				$TransactionID = $params['TransactionID'];
 				$ConfirmCode = $params['ConfirmCode'];
 				$selected_currency = (isset($params['selected_currency']) && !empty($params['selected_currency'])) ? $params['selected_currency'] : 1;
 			   }
-            $url = "v2REAPI?MerchantID=$merchant_id&Call=QA&APIKey=_&output=json&TransactionID=$TransactionID&ConfirmCode=$ConfirmCode";
+            $url = "v2REAPI?MerchantID=$merchant_id&Call=Transactiondetail&APIKey=a&output=json&ConfirmCode=$ConfirmCode";
 
             $result = self::callApi($url, $user_agent);
             return $result;
@@ -110,17 +109,12 @@ class Cointopay
             CURLOPT_URL => $url,
             CURLOPT_USERAGENT => $user_agent
         ));
-        $response = json_decode(curl_exec($curl), TRUE);
-
-        $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        $response = json_decode(curl_exec($curl), true);
+		if (is_string($response) && $response != 'testmerchant success'){
+				\cointopay\Exception::throwException(401, array('reason' => 'BadCredentials:'.$response));
+		}
         curl_close($curl);
 
-        if ($http_status === 200) {
-            return $response;
-        } elseif ($http_status === 400) {
-            return $response;
-        } else {
-            return $response;
-        }
+        return $response;
     }
 }
