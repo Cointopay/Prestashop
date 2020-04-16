@@ -42,16 +42,6 @@ class CointopayCallbackModuleFrontController extends ModuleFrontController
 		$TransactionID = Tools::getValue('TransactionID');
 		
 		$ConfirmCode = Tools::getValue('ConfirmCode');
-		
-		$AltCoinID = Tools::getValue('AltCoinID');
-		
-		$MerchantID = Tools::getValue('MerchantID');
-		
-		$CoinAddressUsed = Tools::getValue('CoinAddressUsed');
-		
-		$SecurityCode = Tools::getValue('SecurityCode');
-		
-		$inputCurrency = Tools::getValue('inputCurrency');
         
         $order = new Order($order_id);
 
@@ -109,7 +99,7 @@ class CointopayCallbackModuleFrontController extends ModuleFrontController
 						$this->setTemplate('cointopay_payment_cancel.tpl');
 					}
 				}
-				elseif($response_ctp->data['AltCoinID'] != $AltCoinID)
+				elseif(null != Tools::getValue('AltCoinID') && $response_ctp->data['AltCoinID'] != Tools::getValue('AltCoinID'))
 				{
 				   $this->context->smarty->assign(array('text' => 'Data mismatch! AltCoinID doesn\'t match'));
 					if (_PS_VERSION_ >= '1.7') {
@@ -118,7 +108,7 @@ class CointopayCallbackModuleFrontController extends ModuleFrontController
 						$this->setTemplate('cointopay_payment_cancel.tpl');
 					}
 				}
-				elseif($response_ctp->data['MerchantID'] != $MerchantID)
+				elseif(null != Tools::getValue('MerchantID') && $response_ctp->data['MerchantID'] != Tools::getValue('MerchantID'))
 				{
 				   $this->context->smarty->assign(array('text' => 'Data mismatch! MerchantID doesn\'t match'));
 					if (_PS_VERSION_ >= '1.7') {
@@ -127,7 +117,7 @@ class CointopayCallbackModuleFrontController extends ModuleFrontController
 						$this->setTemplate('cointopay_payment_cancel.tpl');
 					}
 				}
-				elseif($response_ctp->data['coinAddress'] != $CoinAddressUsed)
+				elseif(null != Tools::getValue('CoinAddressUsed') && $response_ctp->data['coinAddress'] != Tools::getValue('CoinAddressUsed'))
 				{
 				   $this->context->smarty->assign(array('text' => 'Data mismatch! coinAddress doesn\'t match'));
 					if (_PS_VERSION_ >= '1.7') {
@@ -136,7 +126,7 @@ class CointopayCallbackModuleFrontController extends ModuleFrontController
 						$this->setTemplate('cointopay_payment_cancel.tpl');
 					}
 				}
-				elseif($response_ctp->data['SecurityCode'] != $SecurityCode)
+				elseif(null != Tools::getValue('SecurityCode') && $response_ctp->data['SecurityCode'] != Tools::getValue('SecurityCode'))
 				{
 				   $this->context->smarty->assign(array('text' => 'Data mismatch! SecurityCode doesn\'t match'));
 					if (_PS_VERSION_ >= '1.7') {
@@ -145,7 +135,7 @@ class CointopayCallbackModuleFrontController extends ModuleFrontController
 						$this->setTemplate('cointopay_payment_cancel.tpl');
 					}
 				}
-				elseif($response_ctp->data['inputCurrency'] != $inputCurrency)
+				elseif(null != Tools::getValue('inputCurrency') && $response_ctp->data['inputCurrency'] != Tools::getValue('inputCurrency'))
 				{
 				   $this->context->smarty->assign(array('text' => 'Data mismatch! inputCurrency doesn\'t match'));
 					if (_PS_VERSION_ >= '1.7') {
