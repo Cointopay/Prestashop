@@ -39,9 +39,9 @@ class CointopayCallbackModuleFrontController extends ModuleFrontController
 		$cart = $this->context->cart;
         
         $order_id = Tools::getValue('CustomerReferenceNr');
-		$TransactionID = Tools::getValue('TransactionID');
+		$TransactionID = Tools::getValue('COINTOPAY_TransactionID');
 		
-		$ConfirmCode = Tools::getValue('ConfirmCode');
+		$ConfirmCode = Tools::getValue('CoinsConfirmCode');
         
         $order = new Order($order_id);
 
@@ -108,7 +108,7 @@ class CointopayCallbackModuleFrontController extends ModuleFrontController
 						$this->setTemplate('cointopay_payment_cancel.tpl');
 					}
 				}
-				elseif(null != Tools::getValue('MerchantID') && $response_ctp->data['MerchantID'] != Tools::getValue('MerchantID'))
+				elseif(null != Tools::getValue('COINTOPAY_MERCHANT_ID') && $response_ctp->data['MerchantID'] != Tools::getValue('COINTOPAY_MERCHANT_ID'))
 				{
 				   $this->context->smarty->assign(array('text' => 'Data mismatch! MerchantID doesn\'t match'));
 					if (_PS_VERSION_ >= '1.7') {
@@ -159,6 +159,12 @@ class CointopayCallbackModuleFrontController extends ModuleFrontController
 					} elseif ($ctp_order_status == 'failed') {
 						$order_status = 'COINTOPAY_FAILED';
 						$this->logError('PS Orders is failed', $order_id);
+					} elseif ($ctp_order_status == 'underpaid') {
+						$order_status = 'COINTOPAY_PNOTENOUGH';
+						$this->logError('PS Orders is paid cointopay notenough', $order_id);
+					} elseif ($ctp_order_status == 'expired') {
+						$order_status = 'COINTOPAY_EXPIRED';
+						$this->logError('PS Orders is expired', $order_id);
 					} elseif ($ctp_order_status == 'canceled') {
 						$order_status = 'PS_OS_CANCELED';
 					} elseif ($ctp_order_status == 'refunded') {
@@ -174,13 +180,55 @@ class CointopayCallbackModuleFrontController extends ModuleFrontController
 						$history->addWithemail(true, array(
 							'order_name' => Tools::getValue('CustomerReferenceNr'),
 						));
-						$this->context->smarty->assign(array('text' => $order_id));
+						$this->context->smarty->assign(array('text' => 'Successfully Paid Order #'.$order_id));
 						if (_PS_VERSION_ >= '1.7') {
-							$this->setTemplate('module:cointopay/views/templates/front/ctp_payment_cancel.tpl');
+							$this->setTemplate('module:cointopay/views/templates/front/ctp_payment_callback.tpl');
 						} else {
-							$this->setTemplate('ctp_payment_cancel.tpl');
+							$this->setTemplate('ctp_payment_callback.tpl');
 						}
-					} elseif ($order_status == 'COINTOPAY_PNOTENOUGH' || $order_status == 'PS_OS_REFUND') {
+					} elseif ($order_status == 'COINTOPAY_PNOTENOUGH') {
+						$history = new OrderHistory();
+						$history->id_order = $order->id;
+						$history->changeIdOrderState((int)Configuration::get($order_status), $order->id);
+						$history->addWithemail(true, array(
+							'order_name' => Tools::getValue('CustomerReferenceNr'),
+						));
+
+						$this->context->smarty->assign(array('text' => 'Please pay remaining amount for Order #'.$order_id, 'RedirectURL' => Tools::getValue('RedirectURL')));
+						if (_PS_VERSION_ >= '1.7') {
+							$this->setTemplate('module:cointopay/views/templates/front/ctp_payment_paidnotenough.tpl');
+						} else {
+							$this->setTemplate('ctp_payment_paidnotenough.tpl');
+						}
+					} elseif ($order_status == 'COINTOPAY_FAILED') {
+						$history = new OrderHistory();
+						$history->id_order = $order->id;
+						$history->changeIdOrderState((int)Configuration::get($order_status), $order->id);
+						$history->addWithemail(true, array(
+							'order_name' => Tools::getValue('CustomerReferenceNr'),
+						));
+
+						$this->context->smarty->assign(array('text' => 'Payment failed for Order #'.$order_id));
+						if (_PS_VERSION_ >= '1.7') {
+							$this->setTemplate('module:cointopay/views/templates/front/ctp_payment_callback.tpl');
+						} else {
+							$this->setTemplate('ctp_payment_callback.tpl');
+						}
+					} elseif ($order_status == 'COINTOPAY_EXPIRED') {
+						$history = new OrderHistory();
+						$history->id_order = $order->id;
+						$history->changeIdOrderState((int)Configuration::get($order_status), $order->id);
+						$history->addWithemail(true, array(
+							'order_name' => Tools::getValue('CustomerReferenceNr'),
+						));
+
+						$this->context->smarty->assign(array('text' => 'Payment expired for Order #'.$order_id));
+						if (_PS_VERSION_ >= '1.7') {
+							$this->setTemplate('module:cointopay/views/templates/front/ctp_payment_callback.tpl');
+						} else {
+							$this->setTemplate('ctp_payment_callback.tpl');
+						}
+					} elseif ($order_status == 'PS_OS_REFUND') {
 						$history = new OrderHistory();
 						$history->id_order = $order->id;
 						$history->changeIdOrderState((int)Configuration::get($order_status), $order->id);
@@ -193,6 +241,11 @@ class CointopayCallbackModuleFrontController extends ModuleFrontController
 						$this->context->smarty->assign(array(
 							'text' => 'Order Status ' . $ctp_order_status . ' not implemented'
 						));
+						if (_PS_VERSION_ >= '1.7') {
+							$this->setTemplate('module:cointopay/views/templates/front/ctp_payment_callback.tpl');
+						} else {
+							$this->setTemplate('ctp_payment_callback.tpl');
+						}
 					}
 					
 				}
@@ -204,13 +257,18 @@ class CointopayCallbackModuleFrontController extends ModuleFrontController
             $this->context->smarty->assign(array(
                 'text' => get_class($e) . ': ' . $e->getMessage()
             ));
+			if (_PS_VERSION_ >= '1.7') {
+				$this->setTemplate('module:cointopay/views/templates/front/ctp_payment_cancel.tpl');
+			} else {
+				$this->setTemplate('ctp_payment_cancel.tpl');
+			}
         }
-        
+       /*
         if (_PS_VERSION_ >= '1.7') {
             $this->setTemplate('module:cointopay/views/templates/front/ctp_payment_callback.tpl');
         } else {
-            $this->setTemplate('cpt_payment_callback.tpl');
-        }
+            $this->setTemplate('ctp_payment_callback.tpl');
+        }*/
     }
 
     private function logError($message, $cart_id)

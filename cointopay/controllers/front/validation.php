@@ -109,7 +109,7 @@ class CointopayValidationModuleFrontController extends ModuleFrontController
         ));
          
         if (isset($order)) {
-        Tools::redirect('index.php?controller=order-confirmation&id_cart='.$cart->id.'&id_module='.$this->module->id.'&id_order='.$this->module->currentOrder.'&key='.$customer->secure_key.'&QRCodeURL='.$this->flashEncode($order->QRCodeURL).'&TransactionID='.$order->TransactionID.'&CoinName='.$order->CoinName.'&RedirectURL='.$order->shortURL.'&merchant_id='.$merchant_id.'&ExpiryTime='.$order->ExpiryTime.'&Amount='.$order->Amount.'&CustomerReferenceNr='.$order->CustomerReferenceNr.'&coinAddress='.$order->coinAddress);
+        Tools::redirect('index.php?controller=order-confirmation&id_cart='.$cart->id.'&id_module='.$this->module->id.'&id_order='.$this->module->currentOrder.'&key='.$customer->secure_key.'&QRCodeURL='.$this->flashEncode($order->QRCodeURL).'&TransactionID='.$order->TransactionID.'&CoinName='.$order->CoinName.'&RedirectURL='.$order->shortURL.'&merchant_id='.$merchant_id.'&ExpiryTime='.$order->ExpiryTime.'&Amount='.$order->Amount.'&CustomerReferenceNr='.$order->CustomerReferenceNr.'&coinAddress='.$order->coinAddress.'&ConfirmCode='.$order->Security.'&AltCoinID='.$order->AltCoinID.'&SecurityCode='.$order->SecurityCode.'&inputCurrency='.$order->inputCurrency);
 		}
 		else {
             Tools::redirect('index.php?controller=order&step=3');

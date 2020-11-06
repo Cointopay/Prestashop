@@ -44,6 +44,10 @@ $(document).ready(function () {
 								$("#CoinsPaymentStatus").val(cointopay_response[1]);
 								$("#CoinsPaymentCallBack").submit();
 							}
+							else if (cointopay_response[1] == 'underpaid') {
+								$("#CoinsPaymentStatus").val(cointopay_response[1]);
+								$("#CoinsPaymentCallBack").submit();
+							}
 							else if (cointopay_response[1] == 'expired') {
 								$("#CoinsPaymentStatus").val(cointopay_response[1]);
 								$("#CoinsPaymentCallBack").submit();

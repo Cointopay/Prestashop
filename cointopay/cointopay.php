@@ -421,7 +421,7 @@ class Cointopay extends PaymentModule
         if (isset($_REQUEST['CustomerReferenceNr'])) {
 			$_REQUEST['QRCodeURL'] = $_REQUEST['QRCodeURL'];
 			$this->smarty->assign('getparams', $_REQUEST);
-            return $this->context->smarty->fetch('module:cointopay/views/templates/hook/presta_cointopay_order_info.tpl');
+            return $this->context->smarty->fetch('module:cointopay/views/templates/hook/ctp_success_callback.tpl');
         }
     }
 
