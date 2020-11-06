@@ -111,11 +111,11 @@
 <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <form method="post" action="/module/cointopay/callback" id="CoinsPaymentCallBack">
 <input type="hidden" name="CustomerReferenceNr" value="{$smarty.get.CustomerReferenceNr|escape:'htmlall':'UTF-8'}" />
-<input type="hidden" name="CoinsConfirmCode" id="CoinsConfirmCode" value="{$smarty.get.ConfirmCode|escape:'htmlall':'UTF-8'}" />
+<input type="hidden" name="ConfirmCode" id="ConfirmCode" value="{$smarty.get.ConfirmCode|escape:'htmlall':'UTF-8'}" />
 <input type="hidden" name="status" id="CoinsPaymentStatus" value="" />
 <input type="hidden" name="notenough" id="CoinsPaymentnotenough" value="" />
 <input type="hidden" name="COINTOPAY_MERCHANT_ID" id="COINTOPAY_MERCHANT_ID" value="{$smarty.get.merchant_id|escape:'htmlall':'UTF-8'}" />
-<input type="hidden" name="COINTOPAY_TransactionID" id="COINTOPAY_TransactionID" value="{$smarty.get.TransactionID|escape:'htmlall':'UTF-8'}" />
+<input type="hidden" name="TransactionID" id="COINTOPAY_TransactionID" value="{$smarty.get.TransactionID|escape:'htmlall':'UTF-8'}" />
 <input type="hidden" name="CoinAddressUsed" id="CoinAddressUsed" value="{$smarty.get.coinAddress|escape:'htmlall':'UTF-8'}" />
 <input type="hidden" name="SecurityCode" id="SecurityCode" value="{$smarty.get.SecurityCode|escape:'htmlall':'UTF-8'}" />
 <input type="hidden" name="AltCoinID" id="AltCoinID" value="{$smarty.get.AltCoinID|escape:'htmlall':'UTF-8'}" />

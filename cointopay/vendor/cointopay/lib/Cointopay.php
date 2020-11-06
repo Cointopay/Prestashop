@@ -67,7 +67,7 @@ class Cointopay
 
         if ($url == 'merchant') {
             $request_check = 'merchant';
-            $url = "MerchantAPI?Checkout=true&MerchantID=$merchant_id&Amount=10&AltCoinID=$selected_currency&CustomerReferenceNr=testmerchant&SecurityCode=$security_code&output=json&inputCurrency=$currency&transactionconfirmurl=$callback_url&transactionfailurl=$cancel_url";
+           $url = "MerchantAPI?Checkout=true&MerchantID=$merchant_id&Amount=10&AltCoinID=$selected_currency&CustomerReferenceNr=testmerchant&SecurityCode=$security_code&output=json&inputCurrency=$currency&transactionconfirmurl=$callback_url&transactionfailurl=$cancel_url";
 
             $result = self::callApi($url, $user_agent);
             return $result;
@@ -85,7 +85,7 @@ class Cointopay
 		else {
        $currency = $params['currency'];
 
-       $url = "MerchantAPI?Checkout=true&MerchantID=$merchant_id&Amount=$amount&AltCoinID=$selected_currency&CustomerReferenceNr=$order_id&SecurityCode=$security_code&inputCurrency=$currency&output=json";
+       $url = "MerchantAPI?Checkout=true&MerchantID=$merchant_id&Amount=$amount&AltCoinID=$selected_currency&CustomerReferenceNr=$order_id&SecurityCode=$security_code&inputCurrency=$currency&output=json&transactionconfirmurl=$callback_url&transactionfailurl=$cancel_url";
        $result = self::callApi($url, $user_agent);
 
             if ($result == 'testmerchant success') {

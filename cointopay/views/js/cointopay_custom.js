@@ -38,6 +38,7 @@ $(document).ready(function () {
 							var cointopay_response = $.parseJSON(result);			
                             if (cointopay_response[1] == 'paid') {
 								$("#CoinsPaymentStatus").val(cointopay_response[1]);
+								$("#CoinsPaymentnotenough").val(0);
 								$("#CoinsPaymentCallBack").submit();
 							
 							 }  else if (cointopay_response[1] == 'failed') {
@@ -46,6 +47,7 @@ $(document).ready(function () {
 							}
 							else if (cointopay_response[1] == 'underpaid') {
 								$("#CoinsPaymentStatus").val(cointopay_response[1]);
+								$("#CoinsPaymentnotenough").val(1);
 								$("#CoinsPaymentCallBack").submit();
 							}
 							else if (cointopay_response[1] == 'expired') {
@@ -56,5 +58,5 @@ $(document).ready(function () {
                                         }
                                     });
                                 
-                            }, 5000);
+                            }, 30000);
 });

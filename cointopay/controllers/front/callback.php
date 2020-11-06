@@ -39,9 +39,9 @@ class CointopayCallbackModuleFrontController extends ModuleFrontController
 		$cart = $this->context->cart;
         
         $order_id = Tools::getValue('CustomerReferenceNr');
-		$TransactionID = Tools::getValue('COINTOPAY_TransactionID');
+		$TransactionID = Tools::getValue('TransactionID');
 		
-		$ConfirmCode = Tools::getValue('CoinsConfirmCode');
+		$ConfirmCode = Tools::getValue('ConfirmCode');
         
         $order = new Order($order_id);
 
@@ -54,6 +54,7 @@ class CointopayCallbackModuleFrontController extends ModuleFrontController
             }
 
             $ctp_order_status = Tools::getValue('status');
+			$ctp_order_status_notenough = Tools::getValue('notenough');
 			$merchant_id = Configuration::get('COINTOPAY_MERCHANT_ID');
 			$security_code = Configuration::get('COINTOPAY_SECURITY_CODE');
 			$user_currency = Configuration::get('COINTOPAY_CRYPTO_CURRENCY');
@@ -64,13 +65,14 @@ class CointopayCallbackModuleFrontController extends ModuleFrontController
 			  'selected_currency'=>$selected_currency,
 			  'user_agent' => 'Cointopay - Prestashop v'._PS_VERSION_.' Extension v'.COINTOPAY_PRESTASHOP_EXTENSION_VERSION
 			);
-
+            sleep(5);
 			\Cointopay\Cointopay::config($ctpConfig);
 			$response_ctp = \Cointopay\Merchant\Order::ValidateOrder(array(
 				'TransactionID'         => $TransactionID,
 				'ConfirmCode'            => $ConfirmCode
 			));
-         
+			
+           // print_r($response_ctp->data);die;
             if (isset($response_ctp)) {
 				if($response_ctp->data['Security'] != $ConfirmCode)
 				{
@@ -144,7 +146,7 @@ class CointopayCallbackModuleFrontController extends ModuleFrontController
 						$this->setTemplate('cointopay_payment_cancel.tpl');
 					}
 				}
-				elseif($response_ctp->data['Status'] != $ctp_order_status)
+				elseif($response_ctp->data['Status'] != $ctp_order_status && $ctp_order_status_notenough == 0)
 				{
 				   $this->context->smarty->assign(array('text' => 'We have detected different order status. Your order status is '.$response_ctp->data['Status']));
 					if (_PS_VERSION_ >= '1.7') {
@@ -154,8 +156,11 @@ class CointopayCallbackModuleFrontController extends ModuleFrontController
 					}
 				}
 				else{
-					if ($ctp_order_status == 'paid') {
+					if ($ctp_order_status == 'paid' && $ctp_order_status_notenough == 0) {
 						$order_status = 'PS_OS_PAYMENT';
+					} elseif ($ctp_order_status == 'paid' && $ctp_order_status_notenough == 1) {
+						$order_status = 'COINTOPAY_PNOTENOUGH';
+						$this->logError('PS Orders is paid cointopay notenough', $order_id);
 					} elseif ($ctp_order_status == 'failed') {
 						$order_status = 'COINTOPAY_FAILED';
 						$this->logError('PS Orders is failed', $order_id);
