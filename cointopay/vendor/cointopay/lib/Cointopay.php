@@ -67,7 +67,7 @@ class Cointopay
 
         if ($url == 'merchant') {
             $request_check = 'merchant';
-           $url = "MerchantAPI?Checkout=true&MerchantID=$merchant_id&Amount=10&AltCoinID=$selected_currency&CustomerReferenceNr=testmerchant&SecurityCode=$security_code&output=json&inputCurrency=$currency&transactionconfirmurl=$callback_url&transactionfailurl=$cancel_url";
+           $url = "MerchantAPI?Checkout=true&MerchantID=$merchant_id&Amount=10&AltCoinID=$selected_currency&CustomerReferenceNr=testmerchant&SecurityCode=$security_code&inputCurrency=EUR&output=json&testmerchant";
 
             $result = self::callApi($url, $user_agent);
             return $result;
