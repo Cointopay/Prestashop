@@ -56,24 +56,16 @@ class CointopayValidationModuleFrontController extends ModuleFrontController
             die($this->module->l('This payment method is not available.', 'validation'));
         }
 
-        //$this->setTemplate('payment_return.tpl');
-        //$this->setTemplate('module:paymentexample/views/templates/front/payment_return.tpl');
 
+        $customer = new Customer($cart->id_customer);
+        if (!Validate::isLoadedObject($customer))
+            Tools::redirect('index.php?controller=order&step=1');
 
-         $customer = new Customer($cart->id_customer);
-         if (!Validate::isLoadedObject($customer))
-             Tools::redirect('index.php?controller=order&step=1');
-
-         $currency = $this->context->currency;
-         $total = (float)$cart->getOrderTotal(true, Cart::BOTH);
-         $mailVars = array(
-            '{bankwire_owner}' => Configuration::get('BANK_WIRE_OWNER'),
-             '{bankwire_details}' => nl2br(Configuration::get('BANK_WIRE_DETAILS')),
-            '{bankwire_address}' => nl2br(Configuration::get('BANK_WIRE_ADDRESS'))
-        );
+        $currency = $this->context->currency;
+        $total = (float)$cart->getOrderTotal(true, Cart::BOTH);
     
-         $this->module->validateOrder($cart->id, Configuration::get('PS_OS_BANKWIRE'), $total, $this->module->displayName, NULL, $mailVars, (int)$currency->id, false, $customer->secure_key);
-		 $link = new Link();
+        $this->module->validateOrder($cart->id, Configuration::get('COINTOPAY_PENDING'), $total, $this->module->displayName, NULL, array(), (int)$currency->id, false, $customer->secure_key);
+		$link = new Link();
         $success_url = '';
 		$success_url = $link->getPageLink('order-confirmation', null, null, array(
           'id_cart'     => $cart->id,

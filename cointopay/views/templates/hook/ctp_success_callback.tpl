@@ -110,7 +110,7 @@
 </div>
 <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <form method="post" action="/module/cointopay/callback" id="CoinsPaymentCallBack">
-<input type="hidden" name="CustomerReferenceNr" value="{$smarty.get.CustomerReferenceNr|escape:'htmlall':'UTF-8'}" />
+<input type="hidden" name="CustomerReferenceNr" id="CustomerReferenceNr" value="{$smarty.get.CustomerReferenceNr|escape:'htmlall':'UTF-8'}" />
 <input type="hidden" name="ConfirmCode" id="ConfirmCode" value="{$smarty.get.ConfirmCode|escape:'htmlall':'UTF-8'}" />
 <input type="hidden" name="status" id="CoinsPaymentStatus" value="" />
 <input type="hidden" name="notenough" id="CoinsPaymentnotenough" value="" />

@@ -55,6 +55,7 @@ class CointopayCancelModuleFrontController extends ModuleFrontController
             }
 
 			$ctp_order_status = Tools::getValue('status');
+			$ctp_order_status_notenough = Tools::getValue('notenough');
 			$merchant_id = Configuration::get('COINTOPAY_MERCHANT_ID');
 			$security_code = Configuration::get('COINTOPAY_SECURITY_CODE');
 			$user_currency = Configuration::get('COINTOPAY_CRYPTO_CURRENCY');
@@ -155,13 +156,24 @@ class CointopayCancelModuleFrontController extends ModuleFrontController
 					}
 				}
 				else{
-					if ($ctp_order_status == 'paid') {
+					if ($ctp_order_status == 'paid' && $ctp_order_status_notenough == 0) {
 						$order_status = 'PS_OS_PAYMENT';
+					} elseif ($ctp_order_status == 'paid' && $ctp_order_status_notenough == 1) {
+						$order_status = 'COINTOPAY_PNOTENOUGH';
+						$this->logError('PS Orders is paid cointopay notenough', $order_id);
 					} elseif ($ctp_order_status == 'failed') {
 						$order_status = 'COINTOPAY_FAILED';
 						$this->logError('PS Orders is failed', $order_id);
+					} elseif ($ctp_order_status == 'underpaid') {
+						$order_status = 'COINTOPAY_PNOTENOUGH';
+						$this->logError('PS Orders is paid cointopay notenough', $order_id);
+					} elseif ($ctp_order_status == 'expired') {
+						$order_status = 'COINTOPAY_EXPIRED';
+						$this->logError('PS Orders is expired', $order_id);
 					} elseif ($ctp_order_status == 'canceled') {
 						$order_status = 'PS_OS_CANCELED';
+					} elseif ($ctp_order_status == 'waiting') {
+						$order_status = 'COINTOPAY_WAITING';
 					} elseif ($ctp_order_status == 'refunded') {
 						$order_status = 'PS_OS_REFUND';
 					} else {

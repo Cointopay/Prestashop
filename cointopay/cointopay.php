@@ -95,7 +95,23 @@ class Cointopay extends PaymentModule
             return false;
         }
 
-        $order_processing = new OrderState();
+        $order_ctp_pending = new OrderState();
+        $order_ctp_pending->name = array_fill(0, 10, 'Waiting for cointopay transaction');
+        $order_ctp_pending->send_email = 0;
+        $order_ctp_pending->invoice = 0;
+        $order_ctp_pending->color = 'RoyalBlue';
+        $order_ctp_pending->unremovable = false;
+        $order_ctp_pending->logable = 0;
+		
+		$order_ctp_waiting = new OrderState();
+        $order_ctp_waiting->name = array_fill(0, 10, 'Waiting for cointopay comfirmation');
+        $order_ctp_waiting->send_email = 0;
+        $order_ctp_waiting->invoice = 0;
+        $order_ctp_waiting->color = 'RoyalBlue';
+        $order_ctp_waiting->unremovable = false;
+        $order_ctp_waiting->logable = 0;
+		
+		$order_processing = new OrderState();
         $order_processing->name = array_fill(0, 10, 'Cointopay processing in progress');
         $order_processing->send_email = 0;
         $order_processing->invoice = 0;
@@ -135,38 +151,52 @@ class Cointopay extends PaymentModule
         $order_not_enough->unremovable = false;
         $order_not_enough->logable = 0;
 
-        if ($order_processing->add()) {
+        if ($order_ctp_pending->add()) {
             copy(
                 _PS_ROOT_DIR_ . '/modules/cointopay/views/img/logo.png',
-                _PS_ROOT_DIR_ . '/img/os/' . (int)$order_processing->id . '.png'
+                _PS_ROOT_DIR_ . '/img/os/' . (int)$order_ctp_pending->id . '.gif'
+            );
+        }
+		
+		if ($order_ctp_waiting->add()) {
+            copy(
+                _PS_ROOT_DIR_ . '/modules/cointopay/views/img/logo.png',
+                _PS_ROOT_DIR_ . '/img/os/' . (int)$order_ctp_waiting->id . '.gif'
+            );
+        }
+		
+		if ($order_processing->add()) {
+            copy(
+                _PS_ROOT_DIR_ . '/modules/cointopay/views/img/logo.png',
+                _PS_ROOT_DIR_ . '/img/os/' . (int)$order_processing->id . '.gif'
             );
         }
 
         if ($order_failed->add()) {
             copy(
                 _PS_ROOT_DIR_ . '/modules/cointopay/views/img/logo.png',
-                _PS_ROOT_DIR_ . '/img/os/' . (int)$order_failed->id . '.png'
+                _PS_ROOT_DIR_ . '/img/os/' . (int)$order_failed->id . '.gif'
             );
         }
 
         if ($order_expired->add()) {
             copy(
                 _PS_ROOT_DIR_ . '/modules/cointopay/views/img/logo.png',
-                _PS_ROOT_DIR_ . '/img/os/' . (int)$order_expired->id . '.png'
+                _PS_ROOT_DIR_ . '/img/os/' . (int)$order_expired->id . '.gif'
             );
         }
 
         if ($order_invalid->add()) {
             copy(
                 _PS_ROOT_DIR_ . '/modules/cointopay/views/img/logo.png',
-                _PS_ROOT_DIR_ . '/img/os/' . (int)$order_invalid->id . '.png'
+                _PS_ROOT_DIR_ . '/img/os/' . (int)$order_invalid->id . '.gif'
             );
         }
 
         if ($order_not_enough->add()) {
             copy(
                 _PS_ROOT_DIR_ . '/modules/cointopay/views/img/logo.png',
-                _PS_ROOT_DIR_ . '/img/os/' . (int)$order_not_enough->id . '.png'
+                _PS_ROOT_DIR_ . '/img/os/' . (int)$order_not_enough->id . '.gif'
             );
         }
 
@@ -176,6 +206,9 @@ class Cointopay extends PaymentModule
         Configuration::updateValue('COINTOPAY_FAILED', $order_failed->id);
         Configuration::updateValue('COINTOPAY_EXPIRED', $order_expired->id);
         Configuration::updateValue('COINTOPAY_INVALID', $order_invalid->id);
+		Configuration::updateValue('COINTOPAY_PENDING', $order_ctp_pending->id);
+		Configuration::updateValue('COINTOPAY_WAITING', $order_ctp_waiting->id);
+		
 
         if (!parent::install()
             || !$this->registerHook('displayPaymentEU')
@@ -197,6 +230,8 @@ class Cointopay extends PaymentModule
         $order_state_failed = new OrderState(Configuration::get('COINTOPAY_FAILED'));
         $order_state_expired = new OrderState(Configuration::get('COINTOPAY_EXPIRED'));
         $order_state_invalid = new OrderState(Configuration::get('COINTOPAY_INVALID'));
+		$order_state_pending = new OrderState(Configuration::get('COINTOPAY_PENDING'));
+		$order_state_waiting = new OrderState(Configuration::get('COINTOPAY_WAITING'));
 
         return (
             Configuration::deleteByName('COINTOPAY_MERCHANT_ID') &&
@@ -208,6 +243,8 @@ class Cointopay extends PaymentModule
             $order_state_failed->delete() &&
             $order_state_expired->delete() &&
             $order_state_invalid->delete() &&
+			$order_state_pending->delete() &&
+			$order_state_waiting->delete() &&
             parent::uninstall()
         );
     }

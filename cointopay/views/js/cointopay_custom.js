@@ -26,14 +26,15 @@
 $(document).ready(function () {
 
     var merchant_id = $("#COINTOPAY_MERCHANT_ID").val();
-	 var TransactionID = $("#COINTOPAY_TransactionID").val();
+	var TransactionID = $("#COINTOPAY_TransactionID").val();
+	var CustomerReferenceNr = $("#CustomerReferenceNr").val();
 	setInterval(function() {
 
 						$.ajax ({
-							url: '/modules/cointopay/getcoinspaymenturl.php',
+							url: '/module/cointopay/cointopaywaiting',
 							showLoader: true,
 							type: "POST",
-							data: {merchant: merchant_id, TransactionID: TransactionID},
+							data: {merchant: merchant_id, TransactionID: TransactionID, orderID: CustomerReferenceNr},
 							success: function(result) {
 							var cointopay_response = $.parseJSON(result);			
                             if (cointopay_response[1] == 'paid') {

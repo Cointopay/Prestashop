@@ -172,6 +172,8 @@ class CointopayCallbackModuleFrontController extends ModuleFrontController
 						$this->logError('PS Orders is expired', $order_id);
 					} elseif ($ctp_order_status == 'canceled') {
 						$order_status = 'PS_OS_CANCELED';
+					} elseif ($ctp_order_status == 'waiting') {
+						$order_status = 'COINTOPAY_WAITING';
 					} elseif ($ctp_order_status == 'refunded') {
 						$order_status = 'PS_OS_REFUND';
 					} else {
