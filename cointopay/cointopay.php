@@ -282,7 +282,7 @@ class Cointopay extends PaymentModule
             }
 
             if (!Tools::getValue('COINTOPAY_CRYPTO_CURRENCY')) {
-                $this->postErrors[] = $this->l('Crypto Currency is required.');
+                $this->postErrors[] = $this->l('Checkout Currency is required.');
             }
 
             if (empty($this->postErrors)) {
@@ -322,7 +322,7 @@ class Cointopay extends PaymentModule
         $options = array(
             array(
                 'id_option' => 1,
-                'name' => 'Select Crypto currency'
+                'name' => 'Select default checkout currency'
             )
         );
         $fields_form = array(
@@ -354,7 +354,7 @@ class Cointopay extends PaymentModule
                     ),
                     array(
                         'type' => 'select',
-                        'label' => $this->l('Select crypto currency'),
+                        'label' => $this->l('Select default checkout currency'),
                         'name' => 'COINTOPAY_CRYPTO_CURRENCY',
                         'id' => 'crypto_currency',
                         'default_value' => (int)Tools::getValue('COINTOPAY_CRYPTO_CURRENCY'),
