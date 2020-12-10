@@ -14,7 +14,7 @@ Note down the MerchantID, SecurityCode and Currency, information is located in t
 
 ### Via PrestaShop FTP Uploader
 
-1. Download <https://github.com/Cointopay/Prestashop/releases/download/cointopay-prestashop-v1.0.1/cointopay-prestashop-v1.0.1.zip>
+1. Download <https://github.com/Cointopay/Prestashop/archive/cointopay-prestashop-v1.0.1.zip>
 
 2. Go to your PrestaShop admin panel » **Modules and Services**.
 
