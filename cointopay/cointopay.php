@@ -96,6 +96,7 @@ class Cointopay extends PaymentModule
         }
 
         $order_ctp_pending = new OrderState();
+		$order_ctp_pending->module_name = $this->name;
         $order_ctp_pending->name = array_fill(0, 10, 'Waiting for cointopay transaction');
         $order_ctp_pending->send_email = 0;
         $order_ctp_pending->invoice = 0;
@@ -104,6 +105,7 @@ class Cointopay extends PaymentModule
         $order_ctp_pending->logable = 0;
 		
 		$order_ctp_waiting = new OrderState();
+		$order_ctp_waiting->module_name = $this->name;
         $order_ctp_waiting->name = array_fill(0, 10, 'Waiting for cointopay comfirmation');
         $order_ctp_waiting->send_email = 0;
         $order_ctp_waiting->invoice = 0;
@@ -112,6 +114,7 @@ class Cointopay extends PaymentModule
         $order_ctp_waiting->logable = 0;
 		
 		$order_processing = new OrderState();
+		$order_processing->module_name = $this->name;
         $order_processing->name = array_fill(0, 10, 'Cointopay processing in progress');
         $order_processing->send_email = 0;
         $order_processing->invoice = 0;
@@ -120,6 +123,7 @@ class Cointopay extends PaymentModule
         $order_processing->logable = 0;
 
         $order_failed = new OrderState();
+		$order_failed->module_name = $this->name;
         $order_failed->name = array_fill(0, 10, 'Cointopay payment failed');
         $order_failed->send_email = 0;
         $order_failed->invoice = 0;
@@ -128,6 +132,7 @@ class Cointopay extends PaymentModule
         $order_failed->logable = 0;
 
         $order_expired = new OrderState();
+		$order_expired->module_name = $this->name;
         $order_expired->name = array_fill(0, 10, 'Cointopay payment expired');
         $order_expired->send_email = 0;
         $order_expired->invoice = 0;
@@ -136,6 +141,7 @@ class Cointopay extends PaymentModule
         $order_expired->logable = 0;
 
         $order_invalid = new OrderState();
+		$order_invalid->module_name = $this->name;
         $order_invalid->name = array_fill(0, 10, 'Cointopay invoice is invalid');
         $order_invalid->send_email = 0;
         $order_invalid->invoice = 0;
@@ -144,6 +150,7 @@ class Cointopay extends PaymentModule
         $order_invalid->logable = 0;
 
         $order_not_enough = new OrderState();
+		$order_not_enough->module_name = $this->name;
         $order_not_enough->name = array_fill(0, 10, 'Cointopay not enough payment');
         $order_not_enough->send_email = 0;
         $order_not_enough->invoice = 0;
