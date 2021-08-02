@@ -44,7 +44,7 @@ class Cointopay extends PaymentModule
     {
         $this->name = 'cointopay';
         $this->tab = 'payments_gateways';
-        $this->version = '1.0.0';
+        $this->version = '1.0.2';
         $this->ps_versions_compliancy = array('min' => '1.7', 'max' => _PS_VERSION_);
         $this->author = 'Cointopay.com';
         $this->is_eu_compatible = 1;
