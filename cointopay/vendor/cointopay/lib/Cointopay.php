@@ -55,7 +55,8 @@ class Cointopay
         # Check if credentials was passed
         if (empty($merchant_id) || empty($security_code))
             \cointopay\Exception::throwException(400, array('reason' => 'CredentialsMissing'));
-
+		
+		if ($url == 'merchant') {
         if (isset($params) && !empty($params)) {
             $amount = $params['price'];
             $order_id = $params['order_id'];
@@ -65,7 +66,7 @@ class Cointopay
             $selected_currency = (isset($params['selected_currency']) && !empty($params['selected_currency'])) ? $params['selected_currency'] : 1;
         }
 
-        if ($url == 'merchant') {
+        
             $request_check = 'merchant';
            $url = "MerchantAPI?Checkout=true&MerchantID=$merchant_id&Amount=10&AltCoinID=$selected_currency&CustomerReferenceNr=testmerchant&SecurityCode=$security_code&inputCurrency=EUR&output=json&testmerchant";
 
@@ -83,6 +84,14 @@ class Cointopay
             return $result;
         }	
 		else {
+	    if (isset($params) && !empty($params)) {
+            $amount = $params['price'];
+            $order_id = $params['order_id'];
+            $currency = $params['currency'];
+            $callback_url = $params['callback_url'];
+            $cancel_url = $params['cancel_url'];
+            $selected_currency = (isset($params['selected_currency']) && !empty($params['selected_currency'])) ? $params['selected_currency'] : 1;
+        }
        $currency = $params['currency'];
 
        $url = "MerchantAPI?Checkout=true&MerchantID=$merchant_id&Amount=$amount&AltCoinID=$selected_currency&CustomerReferenceNr=$order_id&SecurityCode=$security_code&inputCurrency=$currency&output=json&transactionconfirmurl=$callback_url&transactionfailurl=$cancel_url";

@@ -100,26 +100,53 @@ class CointopayValidationModuleFrontController extends ModuleFrontController
             'selected_currency'=> $selected_currency
         ));
          
-        if (isset($order)) {
-		$confirmation_url = $link->getPageLink('order-confirmation', null, null, array(
-          'id_cart'     => $cart->id,
-          'id_module'   => $this->module->id,
-          'key'         => $customer->secure_key,
-		  'id_order' => $this->module->currentOrder,
-		  'QRCodeURL' => $this->flashEncode($order->QRCodeURL),
-		  'TransactionID' => $order->TransactionID,
-		  'CoinName' => $order->CoinName,
-		  'RedirectURL' => $order->shortURL,
-		  'merchant_id' => $merchant_id,
-		  'ExpiryTime' => $order->ExpiryTime,
-		  'Amount' => $order->Amount,
-		  'CustomerReferenceNr' => $order->CustomerReferenceNr,
-		  'coinAddress' => $order->coinAddress,
-		  'ConfirmCode' => $order->Security,
-		  'AltCoinID' => $order->AltCoinID,
-		  'SecurityCode' => $order->SecurityCode,
-		  'inputCurrency' => $order->inputCurrency
-        ));
+        if (isset($order)) { 
+			if (null != $order->Tag && $order->Tag != '') {
+				 $confirmation_url = $link->getPageLink('order-confirmation', null, null, array(
+				  'id_cart'     => $cart->id,
+				  'id_module'   => $this->module->id,
+				  'key'         => $customer->secure_key,
+				  'id_order' => $this->module->currentOrder,
+				  'QRCodeURL' => $order->QRCodeURL,
+				  'TransactionID' => $order->TransactionID,
+				  'CoinName' => $order->CoinName,
+				  'RedirectURL' => $order->shortURL,
+				  'merchant_id' => $merchant_id,
+				  'ExpiryTime' => $order->ExpiryTime,
+				  'Amount' => $order->Amount,
+				  'CustomerReferenceNr' => $order->CustomerReferenceNr,
+				  'coinAddress' => $order->coinAddress,
+				  'ConfirmCode' => $order->Security,
+				  'AltCoinID' => $order->AltCoinID,
+				  'SecurityCode' => $order->SecurityCode,
+				  'inputCurrency' => $order->inputCurrency,
+				  'CtpTag' => $order->Tag,
+				  
+				));
+				
+			} else {
+			  $confirmation_url = $link->getPageLink('order-confirmation', null, null, array(
+			  'id_cart'     => $cart->id,
+			  'id_module'   => $this->module->id,
+			  'key'         => $customer->secure_key,
+			  'id_order' => $this->module->currentOrder,
+			  'QRCodeURL' => $order->QRCodeURL,
+			  'TransactionID' => $order->TransactionID,
+			  'CoinName' => $order->CoinName,
+			  'RedirectURL' => $order->shortURL,
+			  'merchant_id' => $merchant_id,
+			  'ExpiryTime' => $order->ExpiryTime,
+			  'Amount' => $order->Amount,
+			  'CustomerReferenceNr' => $order->CustomerReferenceNr,
+			  'coinAddress' => $order->coinAddress,
+			  'ConfirmCode' => $order->Security,
+			  'AltCoinID' => $order->AltCoinID,
+			  'SecurityCode' => $order->SecurityCode,
+			  'inputCurrency' => $order->inputCurrency,
+			  
+			));
+		  }
+		
         Tools::redirect($confirmation_url);
 		}
 		else {

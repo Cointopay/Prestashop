@@ -29,7 +29,7 @@
  <p>To pay with Cointopay <a class="inline_popup_cointopay" href="#" rel="nofollow">Click here</a></p>
            
                <div id="cointopay-modal-6-0" class="modal fade cointopay_popup in" tabindex="-1" role="dialog" style="display: block;">
-  <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 1150px;">
+  <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 1150px;margin-left:auto;margin-right:auto;display:table;">
    <div class="modal-content">
      <div class="modal-header">
        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -41,7 +41,7 @@
 
       <div class="row">
      
-   <div class="col-md-8 col-sm-8 hidden-xs-down">
+   <div class="col-md-8 col-sm-8" style="margin-bottom:40px;">
         <table class="form">
                         <tbody>
                             <tr style="height: 50px;">
@@ -66,6 +66,16 @@
                             </tr>
                         </tbody>
                     </table>
+					{if isset($smarty.get.CtpTag)}
+					 <table class="form">
+                        <tbody>
+                            <tr style="height: 50px;">
+                                <td style="width: 200px;">Memo/Tag </td>
+                                <td>{$smarty.get.CtpTag|escape:'htmlall':'UTF-8'} </td>
+                            </tr>
+                        </tbody>
+                    </table>
+					{/if}
                     <table class="form">
                         <tbody>
                             <tr style="height: 50px;">
@@ -95,7 +105,9 @@
         <div class="col-md-4 col-sm-4">
           <div style="text-align: center;">
                     <img src="/modules/cointopay/views/img/cointopay.gif" style="margin: auto; display: table;margin-bottom: 20px;">
-                       <img width="100%" src="{html_entity_decode($smarty.get.QRCodeURL|escape:'htmlall':'UTF-8')}">
+                       <img width="100%" src="{$smarty.get.QRCodeURL|escape:'htmlall':'UTF-8'}"class="ctpQRcode" />
+					   <img width="100%" src="https://chart.googleapis.com/chart?chs=300&cht=qr&chl={$smarty.get.coinAddress}" class="ctpCoinAdress" style="display:none;" />
+					   <button type="button" class="btn btn-block btn-success btnCrypto" style="width:auto;margin:auto;">CRYPTO LINK</button>
                     </div>
         
         </div>
@@ -109,7 +121,7 @@
  </div>
 </div>
 <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-<form method="post" action="/module/cointopay/callback" id="CoinsPaymentCallBack">
+<form method="post" action="{$ctpCllbackurl|escape:'htmlall':'UTF-8'}" id="CoinsPaymentCallBack">
 <input type="hidden" name="CustomerReferenceNr" id="CustomerReferenceNr" value="{$smarty.get.CustomerReferenceNr|escape:'htmlall':'UTF-8'}" />
 <input type="hidden" name="ConfirmCode" id="ConfirmCode" value="{$smarty.get.ConfirmCode|escape:'htmlall':'UTF-8'}" />
 <input type="hidden" name="status" id="CoinsPaymentStatus" value="" />
@@ -120,6 +132,7 @@
 <input type="hidden" name="SecurityCode" id="SecurityCode" value="{$smarty.get.SecurityCode|escape:'htmlall':'UTF-8'}" />
 <input type="hidden" name="AltCoinID" id="AltCoinID" value="{$smarty.get.AltCoinID|escape:'htmlall':'UTF-8'}" />
 <input type="hidden" name="RedirectURL" id="RedirectURL" value="{$smarty.get.RedirectURL|escape:'htmlall':'UTF-8'}" />
+<input type="hidden" name="ajaxurlCTP" id="ajaxurlCTP" value="{$ctpAjaxurl|escape:'htmlall':'UTF-8'}" />
 </form>
 <script type="text/javascript">
 jQuery(document).ready(function ($) {
@@ -165,7 +178,20 @@ var d1 = new Date (),
                                 }
                             }, 1000);
 
-
+	if ($('.btnCrypto').length) {
+		$('.btnCrypto').click(function(){
+			if ($(this).text() == "CRYPTO LINK") {
+				$(this).text("CRYPTO ADDRESS");
+				$('.ctpQRcode').hide();
+				$('.ctpCoinAdress').show();
+			} else if ($(this).text() == "CRYPTO ADDRESS") {
+				$(this).text("CRYPTO LINK");
+				$('.ctpCoinAdress').hide();
+				$('.ctpQRcode').show();
+			}
+			
+		});
+	}
                         
 });                           
     </script>

@@ -32,8 +32,11 @@
 }
 </style>
 {block name="content"}
-  <section  style="padding:40px 0 60px 0;">
-  <h3>Cointopay Payment Status:</h3>
+  <section style="padding:40px 0 60px 0;margin-bottom:50px;">
+  <img src="/modules/cointopay/views/img/success-ctp.png" style="display:inline-block;float:left;margin-right: 10px;" width="53">
+    <div style="display:inline-block;float:left;">
+    <h1>Cointopay Payment Status:</h1>
     {$text|escape:'htmlall':'UTF-8'}
+	</div>
   </section>
 {/block}

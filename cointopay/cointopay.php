@@ -44,7 +44,7 @@ class Cointopay extends PaymentModule
     {
         $this->name = 'cointopay';
         $this->tab = 'payments_gateways';
-        $this->version = '1.0.2';
+        $this->version = '1.1.0';
         $this->ps_versions_compliancy = array('min' => '1.7', 'max' => _PS_VERSION_);
         $this->author = 'Cointopay.com';
         $this->is_eu_compatible = 1;
@@ -465,6 +465,10 @@ class Cointopay extends PaymentModule
         if (isset($_REQUEST['CustomerReferenceNr'])) {
 			$_REQUEST['QRCodeURL'] = $_REQUEST['QRCodeURL'];
 			$this->smarty->assign('getparams', $_REQUEST);
+			$this->context->smarty->assign(array(
+                'ctpAjaxurl' => $this->context->link->getModuleLink($this->name, 'cointopaywaiting', array(), true),
+				'ctpCllbackurl' => $this->context->link->getModuleLink($this->name, 'callback', array(), true)
+            ));
             return $this->context->smarty->fetch('module:cointopay/views/templates/hook/ctp_success_callback.tpl');
         }
     }

@@ -28,10 +28,11 @@ $(document).ready(function () {
     var merchant_id = $("#COINTOPAY_MERCHANT_ID").val();
 	var TransactionID = $("#COINTOPAY_TransactionID").val();
 	var CustomerReferenceNr = $("#CustomerReferenceNr").val();
+	var ajaxurlCTP = $("#ajaxurlCTP").val();
 	setInterval(function() {
 
 						$.ajax ({
-							url: '/module/cointopay/cointopaywaiting',
+							url: ajaxurlCTP,
 							showLoader: true,
 							type: "POST",
 							data: {merchant: merchant_id, TransactionID: TransactionID, orderID: CustomerReferenceNr},

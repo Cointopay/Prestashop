@@ -217,9 +217,9 @@ class CointopayCallbackModuleFrontController extends ModuleFrontController
 
 						$this->context->smarty->assign(array('text' => 'Payment failed for Order #'.$order_id));
 						if (_PS_VERSION_ >= '1.7') {
-							$this->setTemplate('module:cointopay/views/templates/front/ctp_payment_callback.tpl');
+							$this->setTemplate('module:cointopay/views/templates/front/ctp_payment_failed.tpl');
 						} else {
-							$this->setTemplate('ctp_payment_callback.tpl');
+							$this->setTemplate('ctp_payment_failed.tpl');
 						}
 					} elseif ($order_status == 'COINTOPAY_EXPIRED') {
 						$history = new OrderHistory();
@@ -231,9 +231,9 @@ class CointopayCallbackModuleFrontController extends ModuleFrontController
 
 						$this->context->smarty->assign(array('text' => 'Payment expired for Order #'.$order_id));
 						if (_PS_VERSION_ >= '1.7') {
-							$this->setTemplate('module:cointopay/views/templates/front/ctp_payment_callback.tpl');
+							$this->setTemplate('module:cointopay/views/templates/front/ctp_payment_expired.tpl');
 						} else {
-							$this->setTemplate('ctp_payment_callback.tpl');
+							$this->setTemplate('ctp_payment_expired.tpl');
 						}
 					} elseif ($order_status == 'PS_OS_REFUND') {
 						$history = new OrderHistory();
