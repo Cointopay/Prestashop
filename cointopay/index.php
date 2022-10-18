@@ -1,6 +1,6 @@
 <?php
 /*
-* 2010-2014 PrestaShop
+* 2010-2022 PrestaShop
 *
 * NOTICE OF LICENSE
 *
@@ -19,7 +19,7 @@
 * needs please refer to http://www.prestashop.com for more information.
 *
 *  @author PrestaShop SA <contact@prestashop.com>
-*  Copyright (c) 2010-2014 André Rothe
+*  Copyright (c) 2010-2022 André Rothe
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *  International Registered Trademark & Property of PrestaShop SA
 */
