@@ -26,6 +26,6 @@
 {extends "$layout"}
 {block name="content"}
   <section>
-    <iframe src="{$src}" width="900" height="400" ></iframe>
+    <iframe src="{$src|escape:'htmlall':'UTF-8'}" width="900" height="400" ></iframe>
   </section>
 {/block}

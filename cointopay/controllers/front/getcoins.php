@@ -1,7 +1,6 @@
 <?php
-
 /**
-* 2007-2022 PrestaShop and Contributors
+ * 2007-2022 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
  *
@@ -23,14 +22,46 @@
  * @copyright 2007-2022 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * International Registered Trademark & Property of PrestaShop SA
-*/
+ */
 
-header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
+class CointopayGetcoinsModuleFrontController extends ModuleFrontController
+{
+    public $auth = false;
 
-header('Cache-Control: no-store, no-cache, must-revalidate');
-header('Cache-Control: post-check=0, pre-check=0', false);
-header('Pragma: no-cache');
+    /** @var bool */
+    public $ajax;
 
-header('Location: ../');
-exit;
+    public function displayAjax()
+    {		
+		$this->ajax = 1;
+
+        try {
+           if (Tools::getIsset('merchant')) {
+				$merchant = Tools::getValue('merchant');
+
+				$url = 'https://cointopay.com/CloneMasterTransaction?MerchantID=' . $merchant . '&output=json&JsonArray=1';
+				$curl = curl_init();
+				curl_setopt_array($curl, array(
+					CURLOPT_RETURNTRANSFER => 1,
+					CURLOPT_URL => $url,
+				));
+				$response = curl_exec($curl);
+
+				$http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+				curl_close($curl);
+
+				if ($http_status === 200) {
+					$this->ajaxRender($response);
+				} else {
+					$this->ajaxRender("no coins");
+				}
+			} else {
+					$this->ajaxRender("no coins");
+				}
+        } catch (Exception $e) {
+            echo $e->getMessage();
+        }
+		
+    }
+	
+}

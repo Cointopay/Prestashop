@@ -80,7 +80,7 @@
                         <tbody>
                             <tr style="height: 50px;">
                                 <td style="width: 200px;">Amount </td>
-                                <td>{$smarty.get.Amount|escape:'htmlall':'UTF-8'} {$smarty.get.CoinName|escape:'htmlall':'UTF-8'} <img src="https://s3-eu-west-1.amazonaws.com/cointopay/img/{$smarty.get.CoinName}_dash2.png" style="width:20px;margin-top: -4px;"></td>
+                                <td>{$smarty.get.Amount|escape:'htmlall':'UTF-8'} {$smarty.get.CoinName|escape:'htmlall':'UTF-8'} <img src="https://s3-eu-west-1.amazonaws.com/cointopay/img/{$smarty.get.CoinName|escape:'htmlall':'UTF-8'}_dash2.png" style="width:20px;margin-top: -4px;"></td>
                             </tr>
                         </tbody>
                     </table>
@@ -106,7 +106,7 @@
           <div style="text-align: center;">
                     <img src="/modules/cointopay/views/img/cointopay.gif" style="margin: auto; display: table;margin-bottom: 20px;">
                        <img width="100%" src="{$smarty.get.QRCodeURL|escape:'htmlall':'UTF-8'}"class="ctpQRcode" />
-					   <img width="100%" src="https://chart.googleapis.com/chart?chs=300&cht=qr&chl={$smarty.get.coinAddress}" class="ctpCoinAdress" style="display:none;" />
+					   <img width="100%" src="https://chart.googleapis.com/chart?chs=300&cht=qr&chl={$smarty.get.coinAddress|escape:'htmlall':'UTF-8'}" class="ctpCoinAdress" style="display:none;" />
 					   <button type="button" class="btn btn-block btn-success btnCrypto" style="width:auto;margin:auto;">CRYPTO LINK</button>
                     </div>
         

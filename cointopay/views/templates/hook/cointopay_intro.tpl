@@ -34,7 +34,7 @@
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
-          <h2>Bitcoin, Ethereum, Litecoin or many other (via <a href="https://cointopay.com" target="_blank">Cointopay</a>)</h2>
+          <h2>Bitcoin, Ethereum, Litecoin or many other</h2>
         </div>
         <div class="modal-body">
         </div>

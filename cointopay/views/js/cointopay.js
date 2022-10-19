@@ -37,12 +37,16 @@ $(document).ready(function () {
 function getCoin(id) {
 
     var selected_currency = $('#selected_currency').val();
-    var currency_url = '../modules/cointopay/ajaxcall.php';
+	var postdata = {
+		ajax: 1,
+		merchant: id,
+		token: token
+	  };
     if (id.length > 0) {
         $.ajax({
-            url: currency_url,
+            url: coins_ajax_link,
             type: "POST",
-            data: {merchant: id},
+            data: postdata,
             success: function (result) {
 
                 var data = $.parseJSON(result);

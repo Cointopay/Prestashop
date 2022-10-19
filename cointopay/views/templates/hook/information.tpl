@@ -39,7 +39,7 @@
 	  <p>
 	  	<ul>
 	  		<li>Install the Cointopay module on PrestaShop</li>
-	  		<li>Visit <a href="https://cointopay.com" target="_blank">cointopay.com</a> and create an account</li>
+	  		<li>Visit cointopay.com and create an account</li>
 	  		<li>Get your API Key, Merchant ID and Security Code copy-paste them to the Configuration page in Cointopay module</li>
 	  	</ul>
 	  </p>

@@ -420,6 +420,14 @@ class Cointopay extends PaymentModule
     private function displayCointopayInformation($renderForm)
     {
         $this->html .= $this->displayCointopay();
+		// Create a link with the path
+
+		$coins_ajax_link = $this->context->link->getModuleLink($this->name, 'getcoins', array(), true);
+		//define js value to use in ajax url
+		Media::addJsDef(array(
+			"coins_ajax_link" => $coins_ajax_link
+		));
+		
         $this->context->controller->addCSS($this->_path . '/views/css/tabs.css', 'all');
         $this->context->controller->addJS($this->_path . '/views/js/javascript.js', 'all');
         $this->context->controller->addJS($this->_path . '/views/js/cointopay.js', 'all');
