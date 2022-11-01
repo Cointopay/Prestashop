@@ -25,7 +25,7 @@
 
 <section>
   <p>
-    {l s='Cryptocurrency payments are processed by Cointopay.com - over 200 tokens supported.' d='cointopay' mod='cointopay'}
+    {l s='Cryptocurrency payments are processed by Cointopay - over 200 tokens supported.' d='cointopay' mod='cointopay'}
   </p>
   <div class="modal fade" id="cointopay-modal" tabindex="-1" role="dialog" aria-labelledby="Cointopay information" aria-hidden="true">
     <div class="modal-dialog" role="document">
