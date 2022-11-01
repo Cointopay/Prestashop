@@ -56,8 +56,6 @@
 	  		<li><strong> No chargebacks</strong> - guaranteed!</li>
 	  	</ul>
 	  </p>
-
-	  <p><i> Questions? Contact support@cointopay.com ! </i></p>
 	</div>
 </div>
 
