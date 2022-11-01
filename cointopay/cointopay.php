@@ -336,7 +336,7 @@ class Cointopay extends PaymentModule
         $fields_form = array(
             'form' => array(
                 'legend' => array(
-                    'title' => $this->l('Accept Cryptocurrencies with Cointopay.com'),
+                    'title' => $this->l('Accept Cryptocurrencies with Cointopay'),
                     'icon' => 'icon-bitcoin',
                 ),
                 'input' => array(
@@ -350,14 +350,14 @@ class Cointopay extends PaymentModule
                         'type' => 'text',
                         'label' => $this->l('Merchant ID'),
                         'name' => 'COINTOPAY_MERCHANT_ID',
-                        'desc' => $this->l('Your ID (created on Cointopay.com)'),
+                        'desc' => $this->l('Your ID (created on Cointopay)'),
                         'required' => true,
                     ),
                     array(
                         'type' => 'text',
                         'label' => $this->l('Security Code'),
                         'name' => 'COINTOPAY_SECURITY_CODE',
-                        'desc' => $this->l('Your Security Code (created on Cointopay.com)'),
+                        'desc' => $this->l('Your Security Code (created on Cointopay)'),
                         'required' => true,
                     ),
                     array(
