@@ -419,7 +419,6 @@ class Cointopay extends PaymentModule
 
     private function displayCointopayInformation($renderForm)
     {
-        $this->html .= $this->displayCointopay();
 		// Create a link with the path
 
 		$coins_ajax_link = $this->context->link->getModuleLink($this->name, 'getcoins', array(), true);
@@ -435,11 +434,6 @@ class Cointopay extends PaymentModule
         $this->context->smarty->assign('form', $renderForm);
         $this->context->smarty->assign("selected_currency", Configuration::get('COINTOPAY_CRYPTO_CURRENCY'));
         return $this->display(__FILE__, 'information.tpl');
-    }
-
-    private function displayCointopay()
-    {
-        return $this->display(__FILE__, 'infos.tpl');
     }
 
 
