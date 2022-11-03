@@ -1,5 +1,4 @@
-<?php
-/**
+{**
  * 2007-2022 PrestaShop and Contributors
  *
  * NOTICE OF LICENSE
@@ -22,11 +21,22 @@
  * @copyright 2007-2022 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * International Registered Trademark & Property of PrestaShop SA
- */
-header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
-header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
-header('Cache-Control: no-store, no-cache, must-revalidate');
-header('Cache-Control: post-check=0, pre-check=0', false);
-header('Pragma: no-cache');
-header('Location: ../');
-exit;
+ *}
+
+{extends "$layout"}
+<style>
+#wrapper {
+    background: #fff;
+    box-shadow: inset 0 2px 5px 0 rgba(0,0,0,.11);
+    padding-top: 1.563rem;
+}
+</style>
+{block name="content"}
+  <section style="padding:40px 0 60px 0;margin-bottom:50px;">
+  <img src="/modules/cointopay/views/img/cross-ctp.png" style="display:inline-block;float:left;margin-right: 10px;" width="53">
+    <div style="display:inline-block;float:left;">
+    <h1>Cointopay Validation Status:</h1>
+    {$text|escape:'htmlall':'UTF-8'}
+	</div>
+  </section>
+{/block}

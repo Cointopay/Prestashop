@@ -16,7 +16,11 @@ class Order extends Merchant
     public static function createOrFail($params, $options = array(), $authentication = array())
     {
         $order = Cointopay::request('orders', 'GET', $params, $authentication);
-        return new self($order);
+		if (is_string($order) && $order != 'testmerchant success'){
+			return $order;
+		} else {
+			return new self($order);
+		}
     }
 	public static function ValidateOrder($params, $options = array(), $authentication = array())
     {

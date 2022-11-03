@@ -56,6 +56,7 @@
 	  		<li><strong> No chargebacks</strong> - guaranteed!</li>
 	  	</ul>
 	  </p>
+
 	</div>
 </div>
 

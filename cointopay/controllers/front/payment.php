@@ -23,7 +23,6 @@
  * @license   https://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * International Registered Trademark & Property of PrestaShop SA
  */
-
 class CointopayPaymentModuleFrontController extends ModuleFrontController
 {
     public $ssl = true;
@@ -39,16 +38,15 @@ class CointopayPaymentModuleFrontController extends ModuleFrontController
             Tools::redirect('index.php?controller=order');
         }
 
-        $this->context->smarty->assign(array(
-            'nbProducts'    => $cart->nbProducts(),
+        $this->context->smarty->assign([
+            'nbProducts' => $cart->nbProducts(),
             'cust_currency' => $cart->id_currency,
-            'currencies'    => $this->module->getCurrency((int)$cart->id_currency),
-            'total'         => $cart->getOrderTotal(true, Cart::BOTH),
-            'this_path'     => $this->module->getPathUri(),
-            'this_path_bw'  => $this->module->getPathUri(),
-            'this_path_ssl' => Tools::getShopDomainSsl(true, true)
-                . __PS_BASE_URI__ . 'modules/' . $this->module->name . '/'
-        ));
+            'currencies' => $this->module->getCurrency((int) $cart->id_currency),
+            'total' => $cart->getOrderTotal(true, Cart::BOTH),
+            'this_path' => $this->module->getPathUri(),
+            'this_path_bw' => $this->module->getPathUri(),
+            'this_path_ssl' => Tools::getShopDomainSsl(true, true) . __PS_BASE_URI__ . 'modules/' . $this->module->name . '/',
+        ]);
 
         $this->setTemplate('payment_execution.tpl');
     }

@@ -119,13 +119,14 @@ class Cointopay
             CURLOPT_URL => $url,
             CURLOPT_USERAGENT => $user_agent
         ));
-        $response = json_decode(curl_exec($curl), true);
-		if (is_string($response) && $response != 'testmerchant success'){
-			echo
-'BadCredentials:'.$response;  die;
-		}
+        $response = curl_exec($curl);
+		
         curl_close($curl);
-
-        return $response;
+		
+		$result_ctp = json_decode($response, true);
+        if (is_string($result_ctp) && $result_ctp != 'testmerchant success'){
+			return $result_ctp;
+		}
+        return $result_ctp;
     }
 }

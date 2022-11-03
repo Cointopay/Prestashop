@@ -25,48 +25,33 @@
  */
 require_once _PS_MODULE_DIR_ . '/cointopay/vendor/cointopay/init.php';
 require_once _PS_MODULE_DIR_ . '/cointopay/vendor/version.php';
-
-class CointopayCointopaywaitingModuleFrontController extends ModuleFrontController
+class CointopayCointopayvalidationModuleFrontController extends ModuleFrontController
 {
     public $ssl = true;
 
     public function initContent()
     {
         parent::initContent();
+        $ctp_response = '';
+        $ctp_response = Tools::getValue('ctp_response');
 
         try {
-            if (isset($_REQUEST['merchant'])) {
-                $mernt = $_REQUEST['merchant'];
-                $TransID = $_REQUEST['TransactionID'];
-                $orderID = $_REQUEST['orderID'];
-
-                $url = 'https://cointopay.com/CloneMasterTransaction?MerchantID=' . $mernt . '&TransactionID=' . $TransID . '&output=json';
-                $ch = curl_init($url);
-                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_URL, $url);
-                $output = curl_exec($ch);
-                curl_close($ch);
-                $decoded = json_decode($output);
-                $status_res = json_decode($output, true);
-                if ($status_res[1] == 'waiting') {
-                    $order = new Order($orderID);
-                    if ($order->getCurrentOrderState()->name[1] == 'Waiting for cointopay transaction') {
-                        $history = new OrderHistory();
-                        $history->id_order = $orderID;
-                        $history->changeIdOrderState((int) Configuration::get('COINTOPAY_WAITING'), $orderID);
-                        $history->addWithemail(true, ['order_name' => $orderID]);
-                    }
+            if ($ctp_response != '') {
+                $this->context->smarty->assign(['text' => 'BadCredentials:' . $ctp_response]);
+                if (_PS_VERSION_ >= '1.7') {
+                    $this->setTemplate('module:cointopay/views/templates/front/ctp_validation_failed.tpl');
+                } else {
+                    $this->setTemplate('ctp_validation_failed.tpl');
                 }
-                print_r($output);
-                exit;
+            } else {
+                Tools::redirect('index.php?controller=order&step=3');
             }
         } catch (Exception $e) {
             $this->context->smarty->assign(['text' => get_class($e) . ': ' . $e->getMessage()]);
             if (_PS_VERSION_ >= '1.7') {
-                $this->setTemplate('module:cointopay/views/templates/front/ctp_payment_cancel.tpl');
+                $this->setTemplate('module:cointopay/views/templates/front/ctp_validation_failed.tpl');
             } else {
-                $this->setTemplate('ctp_payment_cancel.tpl');
+                $this->setTemplate('ctp_validation_failed.tpl');
             }
         }
     }
