@@ -81,7 +81,7 @@ class CointopayValidationModuleFrontController extends ModuleFrontController
           'selected_currency' => $selected_currency,
           'user_agent' => 'Cointopay - Prestashop v' . _PS_VERSION_ . ' Extension v' . COINTOPAY_PRESTASHOP_EXTENSION_VERSION,
         ];
-		$orderObj = new Order($this->module->currentOrder);
+        $orderObj = new Order($this->module->currentOrder);
 
         \Cointopay\Cointopay::config($ctpConfig);
         $order = \Cointopay\Merchant\Order::createOrFail([
@@ -120,7 +120,7 @@ class CointopayValidationModuleFrontController extends ModuleFrontController
                  'SecurityCode' => $order->SecurityCode,
                  'inputCurrency' => $order->inputCurrency,
                  'CtpTag' => $order->Tag,
-				 'ChainName' => $order->ChainName,
+                 'ChainName' => $order->ChainName,
                 ]);
             } else {
                 $confirmation_url = $link->getPageLink('order-confirmation', null, null, ['id_cart' => $cart->id, 'id_module' => $this->module->id, 'key' => $customer->secure_key, 'id_order' => $this->module->currentOrder, 'QRCodeURL' => $order->QRCodeURL, 'TransactionID' => $order->TransactionID, 'CoinName' => $order->CoinName, 'RedirectURL' => $order->shortURL, 'merchant_id' => $merchant_id, 'ExpiryTime' => $order->ExpiryTime, 'Amount' => $order->Amount, 'CustomerReferenceNr' => $order->CustomerReferenceNr, 'coinAddress' => $order->coinAddress, 'ConfirmCode' => $order->Security, 'AltCoinID' => $order->AltCoinID, 'SecurityCode' => $order->SecurityCode, 'inputCurrency' => $order->inputCurrency, 'ChainName' => $order->ChainName]);
