@@ -58,7 +58,7 @@
                             </tr>
                         </tbody>
                     </table>
-                    <table class="form">
+					<table class="form">
                         <tbody>
                             <tr style="height: 50px;">
                                 <td style="width: 200px;">Payment Address </td>
@@ -72,6 +72,16 @@
                             <tr style="height: 50px;">
                                 <td style="width: 200px;">Memo/Tag </td>
                                 <td>{$smarty.get.CtpTag|escape:'htmlall':'UTF-8'} </td>
+                            </tr>
+                        </tbody>
+                    </table>
+					{/if}
+                    {if isset($smarty.get.ChainName)}
+					<table class="form">
+                        <tbody>
+                            <tr style="height: 50px;">
+                                <td style="width: 200px;">Network/ChainName </td>
+                                <td>{$smarty.get.ChainName|escape:'htmlall':'UTF-8'}</td>
                             </tr>
                         </tbody>
                     </table>

@@ -36,7 +36,7 @@ class CointopayCancelModuleFrontController extends ModuleFrontController
 
         $cart = $this->context->cart;
 
-        $order_id = Tools::getValue('CustomerReferenceNr');
+        $order_id = explode('----', Tools::getValue('CustomerReferenceNr'))[1];
 
         $TransactionID = Tools::getValue('TransactionID');
 
@@ -46,7 +46,7 @@ class CointopayCancelModuleFrontController extends ModuleFrontController
 
         try {
             if (!$order) {
-                $error_message = 'Cointopay Order #' . Tools::getValue('CustomerReferenceNr') . ' does not exists';
+                $error_message = 'Cointopay Order #' . explode('----', Tools::getValue('CustomerReferenceNr'))[0] . ' does not exists';
 
                 $this->logError($error_message, $order_id);
                 throw new Exception($error_message);
@@ -79,7 +79,7 @@ class CointopayCancelModuleFrontController extends ModuleFrontController
                     } else {
                         $this->setTemplate('cointopay_payment_cancel.tpl');
                     }
-                } elseif ($response_ctp->data['CustomerReferenceNr'] != $order_id) {
+                } elseif ($response_ctp->data['CustomerReferenceNr'] != Tools::getValue('CustomerReferenceNr')) {
                     $this->context->smarty->assign(['text' => 'Data mismatch! CustomerReferenceNr doesn\'t match']);
                     if (_PS_VERSION_ >= '1.7') {
                         $this->setTemplate('module:cointopay/views/templates/front/cointopay_payment_cancel.tpl');
@@ -164,7 +164,7 @@ class CointopayCancelModuleFrontController extends ModuleFrontController
                         $history = new OrderHistory();
                         $history->id_order = $order->id;
                         $history->changeIdOrderState((int) Configuration::get($order_status), $order->id);
-                        $history->addWithemail(true, ['order_name' => Tools::getValue('CustomerReferenceNr')]);
+                        $history->addWithemail(true, ['order_name' => explode('----', Tools::getValue('CustomerReferenceNr'))[0]]);
                         $this->context->smarty->assign(['text' => $order_id]);
                         if (_PS_VERSION_ >= '1.7') {
                             $this->setTemplate('module:cointopay/views/templates/front/ctp_payment_cancel.tpl');
@@ -175,7 +175,7 @@ class CointopayCancelModuleFrontController extends ModuleFrontController
                         $history = new OrderHistory();
                         $history->id_order = $order->id;
                         $history->changeIdOrderState((int) Configuration::get($order_status), $order->id);
-                        $history->addWithemail(true, ['order_name' => Tools::getValue('CustomerReferenceNr')]);
+                        $history->addWithemail(true, ['order_name' => explode('----', Tools::getValue('CustomerReferenceNr'))[0]]);
 
                         Tools::redirect($this->context->link->getModuleLink('cointopay', 'cancel'));
                     } else {
