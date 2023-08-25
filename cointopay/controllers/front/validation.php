@@ -18,10 +18,10 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to http://www.prestashop.com for more information.
  *
- *  @author PrestaShop SA <contact@prestashop.com>
- *  @copyright  2007-2015 PrestaShop SA
- *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
- *  International Registered Trademark & Property of PrestaShop SA
+ * @author PrestaShop SA <contact@prestashop.com>
+ * @copyright  2007-2015 PrestaShop SA
+ * @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
 require_once _PS_MODULE_DIR_ . '/cointopay/vendor/cointopay/init.php';
 require_once _PS_MODULE_DIR_ . '/cointopay/vendor/version.php';
@@ -33,6 +33,7 @@ class CointopayValidationModuleFrontController extends ModuleFrontController
      */
     public function postProcess()
     {
+        $selected_currency = Tools::getValue('selected_currency');
         $cart = $this->context->cart;
         if ($cart->id_customer == 0 || $cart->id_address_delivery == 0 || $cart->id_address_invoice == 0 || !$this->module->active) {
             Tools::redirect('index.php?controller=order&step=1');
@@ -73,7 +74,7 @@ class CointopayValidationModuleFrontController extends ModuleFrontController
         }
         $merchant_id = Configuration::get('COINTOPAY_MERCHANT_ID');
         $security_code = Configuration::get('COINTOPAY_SECURITY_CODE');
-        $user_currency = Configuration::get('COINTOPAY_CRYPTO_CURRENCY');
+        $user_currency = !empty($selected_currency) ? $selected_currency : Configuration::get('COINTOPAY_CRYPTO_CURRENCY');
         $selected_currency = (isset($user_currency) && !empty($user_currency)) ? $user_currency : 1;
         $ctpConfig = [
           'merchant_id' => $merchant_id,
@@ -92,7 +93,7 @@ class CointopayValidationModuleFrontController extends ModuleFrontController
             'callback_url' => $this->flashEncode($this->context->link->getModuleLink('cointopay', 'callback')),
             'success_url' => $success_url,
             'title' => Configuration::get('PS_SHOP_NAME') . ' Order #' . $cart->id,
-            'description' => join($description, ', '),
+            'description' => implode(', ', $description),
             'selected_currency' => $selected_currency,
         ]);
 

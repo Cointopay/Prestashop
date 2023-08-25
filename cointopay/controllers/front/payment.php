@@ -31,7 +31,6 @@ class CointopayPaymentModuleFrontController extends ModuleFrontController
     public function initContent()
     {
         parent::initContent();
-
         $cart = $this->context->cart;
 
         if (!$this->module->checkCurrency($cart)) {

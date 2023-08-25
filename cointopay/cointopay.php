@@ -468,10 +468,24 @@ class Cointopay extends PaymentModule
         }
 
         $newOption = new PrestaShop\PrestaShop\Core\Payment\PaymentOption();
-        $newOption->setCallToActionText($this->displayName)->setAction($this->context->link->getModuleLink($this->name, 'validation', [], true))->setAdditionalInformation($this->context->smarty->fetch('module:cointopay/views/templates/hook/cointopay_intro.tpl'))->setLogo(Media::getMediaPath(_PS_MODULE_DIR_ . $this->name . '/views/img/order-page.png'));
+        $coins_ajax_link = $this->context->link->getModuleLink($this->name, 'getcoins', [], true);
+        $this->context->smarty->assign([
+            'merchant_id' => Configuration::get('COINTOPAY_MERCHANT_ID'),
+            'selected_currency' => Configuration::get('COINTOPAY_CRYPTO_CURRENCY'),
+            'coins_ajax_link' => $coins_ajax_link,
+        ]);
+        $newOption->setCallToActionText($this->displayName)
+            ->setAction($this->context->link->getModuleLink($this->name, 'validation', [], true))
+            ->setAdditionalInformation($this->context->smarty->fetch('module:cointopay/views/templates/hook/cointopay_intro.tpl'))
+            ->setLogo(Media::getMediaPath(_PS_MODULE_DIR_ . $this->name . '/views/img/order-page.png'))
+            ->setInputs([
+                'selected_currency' => [
+                    'type' => 'hidden',
+                    'name' => 'selected_currency',
+                    'value' => Configuration::get('COINTOPAY_CRYPTO_CURRENCY'),
+                ],
+            ]);
 
-        $paymentOptions = [$newOption];
-
-        return $paymentOptions;
+        return [$newOption];
     }
 }

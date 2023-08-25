@@ -24,41 +24,40 @@
 */
 
 $(document).ready(function () {
-
-    var merchant_id = $("#COINTOPAY_MERCHANT_ID").val();
+	var merchant_id = $("#COINTOPAY_MERCHANT_ID").val();
 	var TransactionID = $("#COINTOPAY_TransactionID").val();
 	var CustomerReferenceNr = $("#CustomerReferenceNr").val();
 	var ajaxurlCTP = $("#ajaxurlCTP").val();
-	setInterval(function() {
+	setInterval(function () {
 
-						$.ajax ({
-							url: ajaxurlCTP,
-							showLoader: true,
-							type: "POST",
-							data: {merchant: merchant_id, TransactionID: TransactionID, orderID: CustomerReferenceNr},
-							success: function(result) {
-							var cointopay_response = $.parseJSON(result);			
-                            if (cointopay_response[1] == 'paid') {
-								$("#CoinsPaymentStatus").val(cointopay_response[1]);
-								$("#CoinsPaymentnotenough").val(0);
-								$("#CoinsPaymentCallBack").submit();
-							
-							 }  else if (cointopay_response[1] == 'failed') {
-								$("#CoinsPaymentStatus").val(cointopay_response[1]);
-								$("#CoinsPaymentCallBack").submit();
-							}
-							else if (cointopay_response[1] == 'underpaid') {
-								$("#CoinsPaymentStatus").val(cointopay_response[1]);
-								$("#CoinsPaymentnotenough").val(1);
-								$("#CoinsPaymentCallBack").submit();
-							}
-							else if (cointopay_response[1] == 'expired') {
-								$("#CoinsPaymentStatus").val(cointopay_response[1]);
-								$("#CoinsPaymentCallBack").submit();
-							}
-                                            
-                                        }
-                                    });
-                                
-                            }, 30000);
+		$.ajax({
+			url: ajaxurlCTP,
+			showLoader: true,
+			type: "POST",
+			data: { merchant: merchant_id, TransactionID: TransactionID, orderID: CustomerReferenceNr },
+			success: function (result) {
+				var cointopay_response = $.parseJSON(result);
+				if (cointopay_response[1] == 'paid') {
+					$("#CoinsPaymentStatus").val(cointopay_response[1]);
+					$("#CoinsPaymentnotenough").val(0);
+					$("#CoinsPaymentCallBack").submit();
+
+				} else if (cointopay_response[1] == 'failed') {
+					$("#CoinsPaymentStatus").val(cointopay_response[1]);
+					$("#CoinsPaymentCallBack").submit();
+				}
+				else if (cointopay_response[1] == 'underpaid') {
+					$("#CoinsPaymentStatus").val(cointopay_response[1]);
+					$("#CoinsPaymentnotenough").val(1);
+					$("#CoinsPaymentCallBack").submit();
+				}
+				else if (cointopay_response[1] == 'expired') {
+					$("#CoinsPaymentStatus").val(cointopay_response[1]);
+					$("#CoinsPaymentCallBack").submit();
+				}
+
+			}
+		});
+
+	}, 30000);
 });

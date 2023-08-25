@@ -37,18 +37,17 @@ $(document).ready(function () {
 function getCoin(id) {
 
     var selected_currency = $('#selected_currency').val();
-	var postdata = {
-		ajax: 1,
-		merchant: id,
-		token: token
-	  };
+    var postdata = {
+        ajax: 1,
+        merchant: id,
+        token: token
+    };
     if (id.length > 0) {
         $.ajax({
             url: coins_ajax_link,
             type: "POST",
             data: postdata,
             success: function (result) {
-
                 var data = $.parseJSON(result);
                 var str = "";
                 var $crypto_currency = $('#crypto_currency');

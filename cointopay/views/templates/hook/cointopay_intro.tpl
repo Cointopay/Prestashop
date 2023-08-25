@@ -24,9 +24,14 @@
  *}
 
 <section>
+  <input type="hidden" id="merchantId" value="{$merchant_id}" />
+  <input type="hidden" id="selectedCurrency" value="{$selected_currency}" />
   <p>
     {l s='Cryptocurrency payments are processed by Cointopay - over 200 tokens supported.' d='cointopay' mod='cointopay'}
   </p>
+  <select id="crypto_currency" class="form-control form-control-select" name="selected_currency">
+    <option>Select default checkout currency</option>
+  </select>
   <div class="modal fade" id="cointopay-modal" tabindex="-1" role="dialog" aria-labelledby="Cointopay information" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
@@ -42,3 +47,56 @@
     </div>
   </div>
 </section>
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+<script type="text/javascript">
+jQuery(document).ready(function ($) {
+  $(document).ready(function () {
+
+    var merchant_id = $("#merchantId").val();
+    getCoin(merchant_id);
+});
+
+function getCoin(id) {
+
+    var selected_currency = $('#selectedCurrency').val();
+    var postdata = {
+        ajax: 1,
+        merchant: id
+    };
+    var url = '{$coins_ajax_link}'
+    if (url !== '') {
+        url = url.replaceAll('&amp;', '&')
+    }
+    if (id.length > 0) {
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: postdata,
+            success: function (result) {
+                var data = $.parseJSON(result);
+                var str = "";
+                var $crypto_currency = $('#crypto_currency');
+
+                $.each(data, function (index, value) {
+                    if (data[index].id != 0) {
+                        str += "<option value='" + data[index].id + "'> " + data[index].name + "</option>";
+                    }
+                });
+
+                $crypto_currency.html(str);
+                if (selected_currency != '' && selected_currency != 0) {
+                    $crypto_currency.val(selected_currency);
+                }
+                $(document).on('change', '#crypto_currency', function() {
+                  $('input[name="selected_currency"]').val($('option:selected', this).val());
+                });
+            },
+            error: function () {
+                console.log("error");
+            }
+        });
+    }
+}
+});
+</script>

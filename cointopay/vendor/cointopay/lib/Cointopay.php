@@ -57,18 +57,18 @@ class Cointopay
             \cointopay\Exception::throwException(400, array('reason' => 'CredentialsMissing'));
 		
 		if ($url == 'merchant') {
-        if (isset($params) && !empty($params)) {
-            $amount = $params['price'];
-            $order_id = $params['order_id'];
-            $currency = $params['currency'];
-            $callback_url = $params['callback_url'];
-            $cancel_url = $params['cancel_url'];
-            $selected_currency = (isset($params['selected_currency']) && !empty($params['selected_currency'])) ? $params['selected_currency'] : 1;
-        }
+            if (isset($params) && !empty($params)) {
+                $amount = $params['price'];
+                $order_id = $params['order_id'];
+                $currency = $params['currency'];
+                $callback_url = $params['callback_url'];
+                $cancel_url = $params['cancel_url'];
+                $selected_currency = (isset($params['selected_currency']) && !empty($params['selected_currency'])) ? $params['selected_currency'] : 1;
+            }
 
         
             $request_check = 'merchant';
-           $url = "MerchantAPI?Checkout=true&MerchantID=$merchant_id&Amount=10&AltCoinID=$selected_currency&CustomerReferenceNr=testmerchant&SecurityCode=$security_code&inputCurrency=EUR&output=json&testmerchant";
+            $url = "MerchantAPI?Checkout=true&MerchantID=$merchant_id&Amount=10&AltCoinID=$selected_currency&CustomerReferenceNr=testmerchant&SecurityCode=$security_code&inputCurrency=EUR&output=json&testmerchant";
 
             $result = self::callApi($url, $user_agent);
             return $result;
@@ -82,20 +82,19 @@ class Cointopay
 
             $result = self::callApi($url, $user_agent);
             return $result;
-        }	
-		else {
-	    if (isset($params) && !empty($params)) {
-            $amount = $params['price'];
-            $order_id = $params['order_id'];
+        } else {
+            if (isset($params) && !empty($params)) {
+                $amount = $params['price'];
+                $order_id = $params['order_id'];
+                $currency = $params['currency'];
+                $callback_url = $params['callback_url'];
+                $cancel_url = $params['cancel_url'];
+                $selected_currency = (isset($params['selected_currency']) && !empty($params['selected_currency'])) ? $params['selected_currency'] : 1;
+            }
             $currency = $params['currency'];
-            $callback_url = $params['callback_url'];
-            $cancel_url = $params['cancel_url'];
-            $selected_currency = (isset($params['selected_currency']) && !empty($params['selected_currency'])) ? $params['selected_currency'] : 1;
-        }
-       $currency = $params['currency'];
 
-       $url = "MerchantAPI?Checkout=true&MerchantID=$merchant_id&Amount=$amount&AltCoinID=$selected_currency&CustomerReferenceNr=$order_id&SecurityCode=$security_code&inputCurrency=$currency&output=json&transactionconfirmurl=$callback_url&transactionfailurl=$cancel_url";
-       $result = self::callApi($url, $user_agent);
+            $url = "MerchantAPI?Checkout=true&MerchantID=$merchant_id&Amount=$amount&AltCoinID=$selected_currency&CustomerReferenceNr=$order_id&SecurityCode=$security_code&inputCurrency=$currency&output=json&transactionconfirmurl=$callback_url&transactionfailurl=$cancel_url";
+            $result = self::callApi($url, $user_agent);
 
             if ($result == 'testmerchant success') {
 
