@@ -448,9 +448,21 @@ class Cointopay extends PaymentModule
         if (isset($_REQUEST['CustomerReferenceNr'])) {
             $_REQUEST['QRCodeURL'] = $_REQUEST['QRCodeURL'];
             $this->smarty->assign('getparams', $_REQUEST);
+            $file_exists = false;
+			if (isset($_REQUEST['coinAddress'])) {
+				$filename = "https://quickchart.io/qr?size=300&text=".$_REQUEST['coinAddress'];
+				$file_hanlde = @fopen($filename, 'r');
+				if (!$file_hanlde) {
+					$file_exists = false;
+				} else {
+					$file_exists = true;
+				}
+			}
+            $this->smarty->assign('getparams', $_REQUEST);
             $this->context->smarty->assign([
                 'ctpAjaxurl' => $this->context->link->getModuleLink($this->name, 'cointopaywaiting', [], true),
                 'ctpCllbackurl' => $this->context->link->getModuleLink($this->name, 'callback', [], true),
+				'file_exists' => $file_exists
             ]);
 
             return $this->context->smarty->fetch('module:cointopay/views/templates/hook/ctp_success_callback.tpl');
