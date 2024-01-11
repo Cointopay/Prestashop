@@ -116,7 +116,7 @@
           <div style="text-align: center;">
                     <img src="/modules/cointopay/views/img/cointopay.gif" style="margin: auto; display: table;margin-bottom: 20px;">
                        <img width="100%" src="{$smarty.get.QRCodeURL|escape:'htmlall':'UTF-8'}"class="ctpQRcode" />
-{if file_exists("https://quickchart.io/qr?size=300&text={$smarty.get.coinAddress|escape:'htmlall':'UTF-8'}")}
+{if $file_exists}
 					   <img width="100%" src="https://quickchart.io/qr?size=300&text={$smarty.get.coinAddress|escape:'htmlall':'UTF-8'}" class="ctpCoinAdress" style="display:none;" />
 {/if}
 					   <button type="button" class="btn btn-block btn-success btnCrypto" style="width:auto;margin:auto;">CRYPTO LINK</button>
